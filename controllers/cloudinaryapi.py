@@ -14,20 +14,25 @@ cloudinary_bp = Blueprint('cloudinaryapi', __name__)
 def get_fotos():
     try:
         # Obtém o corpo da requisição
-        payload = request.get_json()
-        next_cursor = payload.get('next_cursor') if payload else None
+        dados_requisicao = request.get_json()
+        next_cursor = dados_requisicao.get('next_cursor') if dados_requisicao else None
+        pasta = dados_requisicao.get('pasta') if dados_requisicao else None
+        
+        # Verifica se a pasta foi fornecida
+        if not pasta:
+            return jsonify({"erro": "O parâmetro 'pasta' é obrigatório"}), 400
         
         # Configuração do Cloudinary com valores do .env
         cloudinary.config(
-            cloud_name=os.getenv("CLOUD_NAME"),
+            cloud_name = os.getenv("CLOUD_NAME"),
             api_key=os.getenv("API_KEY"),
             api_secret=os.getenv("API_SECRET")
         )
         
-        # Opções para a API do Cloudinary
+        # Opções para a API do Cloudinary - Corpo da requisição ao Cloudinary
         options = {
-            "asset_folder": 'projetos',
-            "max_results": 3
+            "asset_folder": pasta, # Usa a pasta recebida do frontend
+            "max_results": 6
         }
         
         # Adiciona o cursor à próxima página, se disponível
