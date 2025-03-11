@@ -1,8 +1,8 @@
 import psycopg
 from psycopg.rows import dict_row
 import os
-from dotenv import load_dotenv  # Para carregar as variáveis de ambiente
-load_dotenv()
+  # Para carregar as variáveis de ambiente
+
 
 database_url = os.getenv("DATABASE_URL")
 connection = psycopg.connect(database_url, row_factory=dict_row)

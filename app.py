@@ -1,12 +1,12 @@
 from flask import Flask
 from flask_cors import CORS
-from dotenv import load_dotenv
+
 import cloudinary
 
 from controllers.contatos import contatos_bp
 from controllers.cloudinaryapi import cloudinary_bp
 
-load_dotenv()
+
 
 app = Flask(__name__)
 

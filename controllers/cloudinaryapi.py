@@ -3,10 +3,10 @@ import cloudinary
 import cloudinary.api
 import cloudinary.uploader
 import os
-from dotenv import load_dotenv  # Para carregar as variáveis de ambiente
+  # Para carregar as variáveis de ambiente
 
 # Carrega as variáveis de ambiente do arquivo .env
-load_dotenv()
+
 
 cloudinary_bp = Blueprint('cloudinaryapi', __name__)
 
