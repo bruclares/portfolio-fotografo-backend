@@ -5,7 +5,6 @@ import cloudinary
 
 from controllers.contatos import contatos_bp
 from controllers.cloudinaryapi import cloudinary_bp
-from config import Config
 
 load_dotenv()
 

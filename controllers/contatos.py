@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from database import get_db
+from database import connection
 import psycopg
 
 contatos_bp = Blueprint("contatos", __name__)
@@ -21,7 +21,7 @@ def inserir_contato():
         return jsonify({"erro": "Ao menos um contato é obrigatório"}), 400
     
     try:
-        with get_db() as conn:
+        with connection as conn:
             with conn.cursor() as curs:
                 curs.execute(
                     '''INSERT INTO contatos (nome,
