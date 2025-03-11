@@ -1,8 +1,13 @@
 from flask import Flask
-from controllers.contatos import contatos_bp
 from flask_cors import CORS
+from dotenv import load_dotenv
+import cloudinary
 
-# python app.py
+from controllers.contatos import contatos_bp
+from controllers.cloudinaryapi import cloudinary_bp
+from config import Config
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -15,6 +20,7 @@ def home():
 
 
 app.register_blueprint(contatos_bp, url_prefix="/api/contatos")
+app.register_blueprint(cloudinary_bp, url_prefix="/api/cloudinary")
 
 
 if __name__ == "__main__":
