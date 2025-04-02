@@ -2,11 +2,10 @@ from flask import Blueprint, jsonify, request
 import cloudinary
 import cloudinary.api
 import cloudinary.uploader
+from dotenv import load_dotenv
 import os
-  # Para carregar as variáveis de ambiente
-
-# Carrega as variáveis de ambiente do arquivo .env
-
+from services.logs import registrar_log
+load_dotenv()
 
 cloudinary_bp = Blueprint('cloudinaryapi', __name__)
 
@@ -20,11 +19,15 @@ def get_fotos():
         
         # Verifica se a pasta foi fornecida
         if not pasta:
+            # já registra a intenção do usuário em acessar determinada pasta 
+            registrar_log("Erro de Validação", "O parâmetro 'pasta' não foi informado")
             return jsonify({"erro": "O parâmetro 'pasta' é obrigatório"}), 400
+        
+        registrar_log("Requisição de Galeria", f"Usuário solicitou fotos da pasta '{pasta}'")
         
         # Configuração do Cloudinary com valores do .env
         cloudinary.config(
-            cloud_name = os.getenv("CLOUD_NAME"),
+            cloud_name=os.getenv("CLOUD_NAME"),
             api_key=os.getenv("API_KEY"),
             api_secret=os.getenv("API_SECRET")
         )
@@ -32,7 +35,7 @@ def get_fotos():
         # Opções para a API do Cloudinary - Corpo da requisição ao Cloudinary
         options = {
             "asset_folder": pasta, # Usa a pasta recebida do frontend
-            "max_results": 6
+            "max_results": 18
         }
         
         # Adiciona o cursor à próxima página, se disponível
@@ -56,8 +59,11 @@ def get_fotos():
             }
             resposta['fotos'].append(foto)
             
+        # log de sucesso 
+        registrar_log("Galeria Recuperada", f"{len(resposta['fotos'])} fotos retornadas da pasta '{pasta}'")
+            
         return jsonify(resposta)
         
     except Exception as e:
-        print(f"Erro ao buscar fotos: {str(e)}")
-        return jsonify({"erro": str(e)}), 500
+        registrar_log("Erro ao Buscar Fotos", str(e))
+        return jsonify({"erro": "Erro ao buscar fotos, tente novamente mais tarde!"}), 500
