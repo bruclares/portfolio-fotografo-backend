@@ -2,105 +2,132 @@
 
 ## Descrição do Projeto
 
-O **Portfólio para Fotógrafos** é uma aplicação web Full Stack desenvolvida para fotógrafos exibirem seus portfólios de forma profissional e interativa. Este repositório contém o código do **back-end**, responsável por gerenciar a lógica de negócios, integrações com APIs externas (como o Google Fotos) e a comunicação com o banco de dados.
+O **Portfólio para Fotógrafos** é uma aplicação web Full Stack projetada para fotógrafos exibirem seus portfólios de maneira profissional e interativa. Este repositório contém o código do **back-end**, responsável por gerenciar a lógica de negócios, integrar armazenamento de imagens via Cloudinary e processar contatos de clientes. A API foi desenvolvida com **Flask** e utiliza **PostgreSQL** para o banco de dados, oferecendo uma solução escalável para fotógrafos como Aurora Espinosa.
 
-O back-end foi desenvolvido utilizando **Flask** (framework Python) e é responsável por:
+O back-end permite:
 
-- Gerenciar as requisições do front-end.
-- Armazenar e recuperar dados no banco de dados PostgreSQL.
-- Integrar-se com a API do Google Fotos para carregar as imagens dinamicamente.
+- Receber e armazenar mensagens de contato de visitantes.
+- Gerenciar e recuperar fotos armazenadas no Cloudinary.
+- Fornecer paginação e filtragem de imagens para o front-end.
 
-## Funcionalidades do Back-end
+**Status do Projeto**: Este projeto está em desenvolvimento ativo. Algumas funcionalidades estão completas, mas podem haver bugs ou mudanças frequentes. Estou trabalhando para finalizar a autenticação, otimizar a integração com Cloudinary e realizar testes de performance antes do lançamento final.
 
-### API RESTful
+---
 
-- **Formulário de Contato**: Endpoint para receber e armazenar mensagens enviadas pelos visitantes.
-- **Integração com Google Fotos**: Endpoints para buscar e gerenciar fotos do portfólio a partir da API do Google Fotos.
-- **Paginação de Imagens**: Endpoint para fornecer imagens com paginação, facilitando a exibição no front-end.
+## Funcionalidades
 
-### Banco de Dados
+- **API REST**:
 
-- **Armazenamento de Dados**: Utiliza PostgreSQL para salvar:
-  - Dados de contato dos clientes/visistantes.
-  - Mensagens de contato.
-  - Metadados das fotos (título, descrição, tags).
-  - Informações do fotógrafo (nome, biografia, redes sociais).
+  - Endpoint para envio e armazenamento de contatos (nome, email, mensagem).
+  - Endpoint para recuperar fotos do Cloudinary com paginação e filtragem.
+  - Rota de status para verificar se a API está online.
 
-### Autenticação e Gerenciamento
+- **Banco de Dados**:
 
-- **Página de Login**: Sistema de autenticação para o fotógrafo acessar a área de gerenciamento.
-- **Gerenciamento de Dados**: Endpoints para atualizar informações dos visistantes/clientes, do fotógrafo e gerenciar galerias de fotos.
+  - Armazenamento de dados de contato, logs e metadados de fotos no PostgreSQL.
+  - Tabelas para contatos, logs e configurações do fotógrafo.
+
+- **Integração com Cloudinary**:
+
+  - Upload e recuperação dinâmica de imagens para galerias de portfólio.
+
+- **Segurança e Logs**:
+  - Registro de todas as requisições para auditoria.
+  - Uso de variáveis de ambiente para proteger credenciais sensíveis.
+
+---
 
 ## Tecnologias Utilizadas
 
-- **Back-end**: Python (Flask).
-- **Banco de Dados**: PostgreSQL.
-- **Integração com APIs**: Google Fotos API.
-- **Hospedagem**: Vercel.
-- **Ferramentas de Desenvolvimento**: Git, GitHub, VS Code.
+- **Back-end**: Python (Flask)
+- **Banco de Dados**: PostgreSQL
+- **Armazenamento de Imagens**: Cloudinary
+- **Ferramentas**: Psycopg (driver PostgreSQL), Flask-CORS, Dotenv
+- **Deploy**: Vercel
+- **Controle de Versão**: Git, GitHub
 
-## Entregas por AC
+---
 
-### AC1 (09/03)
+## Status de Desenvolvimento
 
-- **API RESTful**: Desenvolvimento dos endpoints para gerenciar as requisições do formulário de contato.
-- **Conexão com Banco de Dados**: Configuração do PostgreSQL e conexão com o back-end.
-- **Board do Projeto**: Criação do board no GitHub Projects com as tarefas planejadas.
+- **Etapas Concluídas**:
 
-### AC2 (06/04)
+  - Desenvolvimento dos endpoints de contatos e integração com Cloudinary.
+  - Configuração do banco de dados PostgreSQL e criação das tabelas principais.
+  - Deploy inicial na Vercel.
 
-- **Integração com Google Fotos**: Desenvolvimento da integração com a API do Google Fotos para carregar as imagens dinamicamente.
-- **Paginação de Imagens**: Criação de um endpoint para fornecer imagens com paginação.
-- **Banco de Dados**: Criação das tabelas `galerias` e `imagens` e armazenamento dos metadados das fotos.
+- **Próximas Etapas**:
 
-### AC3 (04/05)
+  - Implementação de autenticação para o fotógrafo.
+  - Adição de filtros avançados para fotos (por tags, datas, etc.).
+  - Testes de performance e segurança.
+  - Documentação completa da API (Swagger ou similar).
 
-- **Autenticação**: Implementação do sistema de autenticação para login do fotógrafo.
-- **Gerenciamento de Dados**: Endpoints para atualizar informações do fotógrafo e gerenciar galerias de fotos.
+- **Riscos Conhecidos**:
 
-### Entrega Final (08/06)
+  - Possíveis bugs na integração com Cloudinary em cargas altas.
+  - Falta de tratamento de erros detalhado em alguns endpoints.
 
-- **Deploy**: Hospedagem do back-end na Vercel.
-- **Documentação**: Criação de um README detalhado no GitHub.
-- **Diagramas**: Diagrama de caso de uso e diagrama de classe.
-- **Nova Funcionalidade**: Filtro de fotos por metadados.
+- **Cronograma Estimado**:
+  - Entrega Final: 08/06 (sujeito a alterações).
 
-## Diferenciais do Projeto
+---
 
-1. **Integração com API Externa**: Uso da API do Google Fotos para carregar as fotos dinamicamente.
-2. **Deploy Contínuo**: Utilização da Vercel para garantir que o back-end esteja sempre atualizado.
-3. **Boas Práticas**: Uso de commits semânticos, versionamento no GitHub.
+## Estrutura do Projeto
 
-## Links
+```
+projeto/
+├── controllers/
+│   ├── contatos.py
+│   ├── cloudinaryapi.py
+├── database/
+│   ├── database.py
+│   ├── migration.sql
+├── services/
+│   ├── logs.py
+├── .env
+├── .gitignore
+├── requirements.txt
+├── app.py
+├── vercel.json
+```
 
-- **GitHub Project**: [Link do Board](https://github.com/users/bruclares/projects/3)
-- **Repositório Front-end**: [portfolio-fotografo-frontend](https://github.com/bruclares/portfolio-fotografo-frontend)
-- **Repositório Back-end**: [portfolio-fotografo-backend](https://github.com/bruclares/portfolio-fotografo-backend)
-- **Hospedagem na Vercel**: [Portfólio Fotógrafo](https://portfolio-fotografo.vercel.app/)
-- **Design no Canva**: [Link do Design](https://www.canva.com/design/DAGdA_GiiT4/Cwp1Fd92u-JSd0oN7unAgg/view?utm_content=DAGdA_GiiT4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h0d9a7d5038)
-- **Vídeo de Apresentação**: [Link do Vídeo](https://www.youtube.com/watch?v=LxZCA7SuQ8Y)
+---
 
-## Como Executar o Projeto Localmente
+## Como Executar Localmente
 
 1. **Clone o repositório**:
+
    ```bash
    git clone https://github.com/bruclares/portfolio-fotografo-backend.git
    cd portfolio-fotografo-backend
    ```
-2. **Crie o banco de dados**:
-   Execute o script create_contatos.sql no postgresql
 
-3. **Crie um ambiente virtual** (opcional, mas recomendado):
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # No Windows: venv\Scripts\activate
-   ```
-
-4. **Instale as dependências**:
+2. **Instale as dependências**:
 
    ```bash
    pip install -r requirements.txt
+   ```
+
+3. **Configure as variáveis de ambiente**:
+
+   Crie um arquivo `.env` na raiz do projeto com:
+
+   ```
+   DATABASE_URL=postgresql://usuario:senha@host:porta/banco
+   CLOUD_NAME=seu_cloud_name
+   API_KEY=sua_api_key
+   API_SECRET=sua_api_secret
+   ```
+
+   Certifique-se de que o `.env` está no `.gitignore`.
+
+4. **Configure o banco de dados**:
+
+   Execute o script de migração:
+
+   ```bash
+   psql -U usuario -d banco -f database/migration.sql
    ```
 
 5. **Execute o servidor**:
@@ -110,4 +137,15 @@ O back-end foi desenvolvido utilizando **Flask** (framework Python) e é respons
    ```
 
 6. **Acesse a API**:
-   A API estará disponível em `http://localhost:5000`
+
+   A API estará disponível em `http://localhost:5000`.
+
+---
+
+## Links Úteis
+
+- **Repositório Front-end**: [portfolio-fotografo-frontend](https://github.com/bruclares/portfolio-fotografo-frontend)
+- **Board do Projeto**: [GitHub Projects](https://github.com/users/bruclares/projects/3)
+- **Deploy na Vercel**: [Portfólio Fotógrafo](https://portfolio-fotografo.vercel.app/)
+- **Design**: [Canva](https://www.canva.com/design/DAGdA_GiiT4/Cwp1Fd92u-JSd0oN7unAgg/view?utm_content=DAGdA_GiiT4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h0d9a7d5038)
+- **Vídeo de Apresentação**: [YouTube](https://www.youtube.com/watch?v=LxZCA7SuQ8Y)
