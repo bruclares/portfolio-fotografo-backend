@@ -6,7 +6,7 @@ O **Portfólio para Fotógrafos** é uma aplicação web Full Stack desenvolvida
 
 O back-end suporta o front-end ao permitir o recebimento de mensagens de contato, a recuperação de fotos do Cloudinary e o registro de logs para auditoria.
 
-**Status do Projeto**: Este projeto está em desenvolvimento ativo. Algumas funcionalidades, como os endpoints de contatos e integração com Cloudinary, estão implementadas, mas outras (como autenticação) estão pendentes. Estamos trabalhando para finalizar as próximas etapas antes do lançamento final.
+**Status do Projeto**: Este projeto está em desenvolvimento ativo. Algumas funcionalidades, como os endpoints de contatos e integração com Cloudinary, estão implementadas, mas outras (como autenticação) estão pendentes.
 
 ---
 
