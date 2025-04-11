@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from database.database import connection, get_cursor
 import psycopg
 from services.logs import registrar_log
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 contatos_bp = Blueprint("contatos", __name__)
 
@@ -60,3 +61,31 @@ def inserir_contato():
             ),
             500,
         )
+
+
+@contatos_bp.route("/", methods=["GET"])
+@jwt_required()
+def listar_contatos():
+    lista_contatos = []
+    try:
+        with get_cursor() as cur:
+            cur.execute("SELECT * FROM contatos ORDER BY id DESC")
+            contatos = cur.fetchall()
+
+            for contato in contatos:
+                lista_contatos.append(
+                    {
+                        "id": contato["id"],
+                        "nome": contato["nome"],
+                        "telefone": contato["telefone"],
+                        "email": contato["email"],
+                        "mensagem": contato["mensagem"],
+                    }
+                )
+
+        registrar_log("Contatos Listados", "Contatos recuperados com sucesso")
+        return jsonify(lista_contatos), 200
+
+    except psycopg.DatabaseError as e:
+        registrar_log("Erro ao Listar Contatos", str(e))
+        return jsonify({"erro": "Erro ao buscar contatos"}), 500
