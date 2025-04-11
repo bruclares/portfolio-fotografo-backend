@@ -19,9 +19,8 @@ def get_fotos():
         next_cursor = dados_requisicao.get("next_cursor") if dados_requisicao else None
         pasta = dados_requisicao.get("pasta") if dados_requisicao else None
 
-        # Verifica se a pasta foi fornecida
+        # Valida se a pasta foi fornecida e registra o log
         if not pasta:
-            # já registra a intenção do usuário em acessar determinada pasta
             registrar_log("Erro de Validação", "O parâmetro 'pasta' não foi informado")
             return jsonify({"erro": "O parâmetro 'pasta' é obrigatório"}), 400
 
@@ -29,20 +28,18 @@ def get_fotos():
             "Requisição de Galeria", f"Usuário solicitou fotos da pasta '{pasta}'"
         )
 
-        # Configuração do Cloudinary com valores do .env
+        # Prepara a requisição ao Cloudinary
         cloudinary.config(
             cloud_name=os.getenv("CLOUD_NAME"),
             api_key=os.getenv("API_KEY"),
             api_secret=os.getenv("API_SECRET"),
         )
 
-        # Opções para a API do Cloudinary - Corpo da requisição ao Cloudinary
         options = {
-            "asset_folder": pasta,  # Usa a pasta recebida do frontend
+            "asset_folder": pasta,
             "max_results": 18,
         }
 
-        # Adiciona o cursor à próxima página, se disponível
         if next_cursor:
             options["next_cursor"] = next_cursor
 
@@ -52,7 +49,6 @@ def get_fotos():
         # Prepara a resposta
         resposta = {"fotos": [], "proxima_pagina": response.get("next_cursor")}
 
-        # Processa as fotos retornadas
         for resource in response.get("resources", []):
             foto = {
                 "url": resource["url"],
@@ -60,12 +56,13 @@ def get_fotos():
             }
             resposta["fotos"].append(foto)
 
-        # log de sucesso
+        # registra o log de sucesso
         registrar_log(
             "Galeria Recuperada",
             f"{len(resposta['fotos'])} fotos retornadas da pasta '{pasta}'",
         )
 
+        # retorna a resposta ao frontend
         return jsonify(resposta)
 
     except Exception as e:
