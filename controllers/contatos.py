@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from database.database import connection, get_cursor
 import psycopg
 from services.logs import registrar_log
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 # Define o blueprint de contatos, isolando rotas relacionadas à entidade 'contato'
 contatos_bp = Blueprint("contatos", __name__)
@@ -88,7 +88,7 @@ def listar_contatos():
     try:
         with get_cursor() as cur:
             # Recupera todos os contatos em ordem decrescente (mais recente primeiro)
-            cur.execute("SELECT * FROM contatos ORDER BY id DESC")
+            cur.execute("SELECT * FROM contatos ORDER BY data_envio DESC")
             contatos = cur.fetchall()
 
             # Constrói a lista no formato JSON
