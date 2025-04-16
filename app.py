@@ -8,6 +8,7 @@ import os
 from controllers.contatos import contatos_bp
 from controllers.cloudinaryapi import cloudinary_bp
 from controllers.auth import auth_bp
+from controllers.formas_contato import formas_contato_bp
 
 # Carrega as variáveis de ambiente definidas no arquivo .env
 load_dotenv()
@@ -35,6 +36,7 @@ def home():
 app.register_blueprint(contatos_bp, url_prefix="/api/contatos")
 app.register_blueprint(cloudinary_bp, url_prefix="/api/cloudinary")
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
+app.register_blueprint(formas_contato_bp, url_prefix="/api/formas-contato")
 
 # Inicializa o servidor Flask
 if __name__ == "__main__":
