@@ -35,11 +35,10 @@ CREATE TABLE fotografo (
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Registro da última atualização
 );
 
--- Tabela de contatos públicos do fotógrafo (ex: Instagram, e-mail, telefone etc.)
-CREATE TABLE contatos_fotografo (
-    id SERIAL PRIMARY KEY,                         -- Identificador único do contato
-    tipo VARCHAR(255),                             -- Tipo do contato (ex: WhatsApp, Instagram, E-mail)
-    contato VARCHAR(255),                          -- Informação de contato (ex: link, número ou @)
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data de criação do registro
-    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Última atualização
+-- Tabela de formas de contato públicas do fotógrafo
+CREATE TABLE formas_contato (
+    id SERIAL PRIMARY KEY,
+    tipo VARCHAR(255),                                -- Ex: Instagram, E-mail, Telefone
+    contato VARCHAR(255),                             -- Ex: @aurora_espinosa, contato@aurora.com.br
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
