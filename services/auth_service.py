@@ -41,7 +41,7 @@ def login_usuario(email, senha):
 
     except Exception as e:
         # Falha genérica no backend — mantemos o erro interno fora do cliente por segurança
-        print(str(e))  # TODO: Substituir por logger apropriado (ex: logging.error)
+        print(str(e))
         registrar_log("Erro no login", str(e))
         return {"erro": "Erro interno no servidor", "codigo": 500}
 
