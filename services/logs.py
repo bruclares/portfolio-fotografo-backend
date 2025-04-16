@@ -28,10 +28,8 @@ def registrar_log(tipo_log, status):
 
             # Insere os dados na tabela de logs
             cur.execute(
-                """
-                INSERT INTO logs (tipo_log, ip_usuario, user_agent, url, metodo, status)
-                VALUES (%s, %s, %s, %s, %s, %s)
-                """,
+                """ INSERT INTO logs (tipo_log, ip_usuario, user_agent, url, metodo, status)
+                VALUES (%s, %s, %s, %s, %s, %s) """,
                 (tipo_log, ip_usuario, user_agent, url, metodo, status),
             )
 
@@ -39,7 +37,7 @@ def registrar_log(tipo_log, status):
         connection.commit()
 
     except Exception as e:
-        # Em caso de erro, desfaz qualquer alteração no banco e exibe erro no console
+        # Desfaz qualquer alteração no banco e exibe erro no console
         connection.rollback()
         print(f"Erro ao registrar log: {e}")
         print(f"Erro ao registrar log: {repr(e)}")
