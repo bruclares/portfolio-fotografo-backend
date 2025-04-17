@@ -1,7 +1,9 @@
-from database.database import connection, get_cursor
+from database.database import get_cursor
 from utils.hash import verificar_senha
 from utils.token import gerar_token_jwt
 from services.logs import registrar_log
+from itsdangerous import URLSafeSerializer
+from flask import current_app
 import bcrypt
 
 
@@ -68,3 +70,10 @@ def cadastrar_fotografo(email, senha):
         print(str(e))
         registrar_log("Erro no cadastro", str(e))
         return {"erro": "Erro ao cadastrar fotógrafo", "codigo": 500}
+
+
+def gerar_token_recuperacao(email):
+    # cria um serializador com a chave secreta do Flask
+    s = URLSafeSerializer(current_app.config["SECRET_KEY"])
+    # gera o token com o email + um salt específico
+    return s.dumps(email, salt="recuperar-senha")
