@@ -16,7 +16,7 @@ def listar_formas_contato():
 
     try:
         with get_cursor() as cur:
-            cur.execute("SELECT * FROM formas_contato ORDER BY criado_em DESC")
+            cur.execute("SELECT * FROM formas_contato ORDER BY id DESC")
             resultados = cur.fetchall()
 
             lista = [
@@ -29,6 +29,7 @@ def listar_formas_contato():
         return jsonify(lista), 200
 
     except psycopg.DatabaseError as e:
+        connection.rollback()
         registrar_log("Erro ao Listar Formas de Contato", str(e))
         return jsonify({"erro": "Erro ao buscar formas de contato"}), 500
 
