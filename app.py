@@ -1,46 +1,48 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from dotenv import load_dotenv
-import os
+from flask_mail import Mail
+from config import Config
 
-# Importa os blueprints (rotas organizadas por funcionalidade)
+# Importa os blueprints
 from controllers.contatos import contatos_bp
 from controllers.cloudinaryapi import cloudinary_bp
 from controllers.auth import auth_bp
 from controllers.formas_contato import formas_contato_bp
 
-# Carrega as variáveis de ambiente definidas no arquivo .env
-load_dotenv()
-
-# Inicializa a aplicação Flask
-app = Flask(__name__)
-
-# Habilita o CORS para permitir requisições de diferentes origens (útil para frontend separado)
-CORS(app)
-
-# Configura a chave secreta para geração e validação de tokens JWT
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-
-# Inicializa o gerenciador de tokens JWT
-jwt = JWTManager(app)
+# Cria as extensões (sem inicializar)
+jwt = JWTManager()
+mail = Mail()
 
 
-# Rota básica para verificar se o servidor está online
-@app.route("/")
-def home():
-    return "Olá, estou online!"
+def create_app(config_class=Config):
+    app = Flask(__name__)
+
+    # Carrega configurações
+    app.config.from_object(config_class)
+
+    # Habilita CORS
+    CORS(app)
+
+    # Inicializa as extensões COM a app
+    jwt.init_app(app)
+    mail.init_app(app)
+
+    # Rotas
+    @app.route("/")
+    def home():
+        return "Olá, estou online!"
+
+    # Registra blueprints
+    app.register_blueprint(contatos_bp, url_prefix="/api/contatos")
+    app.register_blueprint(cloudinary_bp, url_prefix="/api/cloudinary")
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    app.register_blueprint(formas_contato_bp, url_prefix="/api/formas-contato")
+
+    return app
 
 
-# Registro das rotas organizadas por blueprint
-app.register_blueprint(contatos_bp, url_prefix="/api/contatos")
-app.register_blueprint(cloudinary_bp, url_prefix="/api/cloudinary")
-app.register_blueprint(auth_bp, url_prefix="/api/auth")
-app.register_blueprint(formas_contato_bp, url_prefix="/api/formas-contato")
+app = create_app()
 
-# Inicializa o servidor Flask
 if __name__ == "__main__":
-    debug_mode = os.getenv("FLASK_DEBUG", "False").lower() == "true"
-    app.run(debug=debug_mode)
-
-# Para executar: python app.py
+    app.run(debug=app.config["FLASK_DEBUG"])
