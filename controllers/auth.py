@@ -21,7 +21,6 @@ def login():
         # Rejeita requisições incompletas
         return jsonify({"erro": "Email e senha são obrigatórios"}), 400
 
-    # Delegamos a lógica de autenticação ao service (separação de responsabilidades)
     resultado = login_usuario(email, senha)
 
     # Em caso de erro no service (ex: usuário inválido ou senha incorreta)
@@ -45,15 +44,12 @@ def cadastro():
     senha = data.get("senha")
 
     if not email or not senha:
-        # Campos obrigatórios ausentes
         return jsonify({"erro": "Email e senha são obrigatórios"}), 400
 
-    # Lógica de cadastro movida para um service separado (boas práticas de modularização)
     resultado = cadastrar_fotografo(email, senha)
 
     # Caso haja falha de validação ou conflito (ex: email já usado)
     if resultado.get("erro"):
         return jsonify({"erro": resultado["erro"]}), resultado["codigo"]
 
-    # Cadastro realizado com sucesso
     return jsonify(resultado), 201
