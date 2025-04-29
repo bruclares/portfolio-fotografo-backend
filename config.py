@@ -20,3 +20,12 @@ class Config:
     MAIL_USE_TLS = os.getenv("MAIL_USE_TLS") == "True"
     MAIL_USE_SSL = os.getenv("MAIL_USE_SSL") == "True"
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
+    MAIL_SALT = os.getenv("MAIL_SALT")
+
+    # Database
+    DATABASE_URL = os.getenv("DATABASE_URL")
+
+    # Cloudinary
+    CLOUD_NAME = os.getenv("CLOUD_NAME")
+    API_KEY = os.getenv("API_KEY")
+    API_SECRET = os.getenv("API_SECRET")
