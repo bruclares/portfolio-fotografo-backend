@@ -63,13 +63,53 @@ def cadastrar_fotografo(email, senha):
 
     except Exception as e:
         # Falha durante o cadastro — logamos o erro para auditoria e suporte
-        print(str(e))
         registrar_log("Erro no cadastro", str(e))
         return {"erro": "Erro ao cadastrar fotógrafo", "codigo": 500}
 
 
 def gerar_token_recuperacao(email):
     # cria um serializador com a chave secreta do Flask
-    s = URLSafeSerializer(current_app.config["SECRET_KEY"])
-    # gera o token com o email + um salt específico
-    return s.dumps(email, salt="recuperar-senha")
+    s = Serializer(
+        current_app.config["SECRET_KEY"], salt="recover-key"
+    )  # salt é um identificador único
+    # token = s.dumps({"email": email})
+    return s.dumps(
+        {"email": email, "used": False, "timestamp": datetime.now().timestamp()}
+    )
+
+
+def verificar_token_recuperacao(token):
+    try:
+        s = Serializer(current_app.config["SECRET_KEY"], salt="recover-key")
+        data = s.loads(token, max_age=3600)
+        return data["email"]
+    except Exception as e:
+        registrar_log("Token inválido", str(e))
+        return None
+
+
+def verificar_senha(senha_digitada, senha_hash):
+    try:
+        return bcrypt.checkpw(
+            senha_digitada.encode("utf-8"), senha_hash.encode("utf-8")
+        )
+    except Exception as e:
+        registrar_log("Erro na verificação de senha", str(e))
+        return False
+
+
+def email_existe(email):
+
+    try:
+        with get_cursor() as cur:
+            cur.execute(
+                "SELECT email FROM fotografo WHERE email = %s",
+                (email,),
+            )
+            usuario = cur.fetchone()
+
+        return usuario is not None
+
+    except Exception as e:
+        registrar_log("Erro ao verificar email", str(e))
+        return {"erro": "Não foi possível verificar email", "codigo": 500}
