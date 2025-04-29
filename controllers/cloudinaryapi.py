@@ -41,9 +41,9 @@ def get_fotos():
 
         # Configura credenciais da API do Cloudinary via variáveis de ambiente
         cloudinary.config(
-            cloud_name=os.getenv("CLOUD_NAME"),
-            api_key=os.getenv("API_KEY"),
-            api_secret=os.getenv("API_SECRET"),
+            cloud_name=current_app.config["CLOUD_NAME"],
+            api_key=current_app.config["API_KEY"],
+            api_secret=current_app.config["API_SECRET"],
         )
 
         # Monta os parâmetros da requisição
