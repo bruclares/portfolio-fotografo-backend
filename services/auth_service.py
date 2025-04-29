@@ -25,18 +25,14 @@ def login_usuario(email, senha):
 
         # Desestrutura os dados retornados para facilitar leitura e uso
         id_fotografo, email_db, senha_hash = usuario.values()
-        print(usuario.values())
 
         # Verifica a senha com hash usando função utilitária (mantém a responsabilidade separada)
         if not verificar_senha(senha, senha_hash):
             registrar_log("Login falhou", f"Senha inválida para {email_db}")
             return {"erro": "Senha inválida", "codigo": 401}
 
-        print("passou da senha, sei lá")
-
         # Geração de token JWT contendo o ID do fotógrafo — usado para autenticação nas rotas protegidas
         token = gerar_token_jwt(id_fotografo)
-        print("qualquer coisa", token)
 
         registrar_log("Login bem-sucedido", f"Usuário {email_db} logado")
         return {"token": token}
