@@ -1,9 +1,7 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 import cloudinary
 import cloudinary.api
-import cloudinary.uploader
 from dotenv import load_dotenv
-import os
 from services.logs import registrar_log
 
 # Carrega variáveis de ambiente do .env
