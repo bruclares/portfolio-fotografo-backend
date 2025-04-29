@@ -1,10 +1,10 @@
 from database.database import get_cursor
-from utils.hash import verificar_senha
 from utils.token import gerar_token_jwt
 from services.logs import registrar_log
-from itsdangerous import URLSafeSerializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app
 import bcrypt
+from datetime import datetime
 
 
 def login_usuario(email, senha):
