@@ -1,6 +1,6 @@
-import psycopg
-from psycopg.rows import dict_row
 from dotenv import load_dotenv
+from psycopg.rows import dict_row
+import psycopg
 import os
 
 # Carrega as variáveis de ambiente do arquivo .env
