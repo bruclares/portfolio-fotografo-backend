@@ -68,24 +68,68 @@ def cadastrar_fotografo(email, senha):
 
 
 def gerar_token_recuperacao(email):
-    # cria um serializador com a chave secreta do Flask
-    s = Serializer(
-        current_app.config["SECRET_KEY"], salt="recover-key"
-    )  # salt é um identificador único
-    # token = s.dumps({"email": email})
-    return s.dumps(
-        {"email": email, "used": False, "timestamp": datetime.now().timestamp()}
-    )
+    try:
+        with get_cursor() as cur:
+            # Busca ID do fotógrafo
+            cur.execute("SELECT id FROM fotografo WHERE email = %s", (email,))
+            fotografo_id = cur.fetchone()["id"]
+
+        # gera o tken
+        s = Serializer(current_app.config["SECRET_KEY"], salt="recover-key")
+        token = s.dumps({"fid": fotografo_id, "timestamp": datetime.now().timestamp()})
+
+        with get_cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO tokens_recuperacao (token, fotografo_id) VALUES (%s, %s)
+                """,
+                (token, fotografo_id),
+            )
+            cur.connection.commit()
+        return {"token": token}
+
+    except Exception as e:
+        cur.connection.rollback()
+        print(str(e))
+        return {
+            "erro": "Não foi possível gerar o token, tente novamente.",
+            "codigo": 500,
+        }
 
 
 def verificar_token_recuperacao(token):
     try:
-        s = Serializer(current_app.config["SECRET_KEY"], salt="recover-key")
-        data = s.loads(token, max_age=3600)
-        return data["email"]
+        mensagem = None
+
+        with get_cursor() as cur:
+            cur.execute(
+                """
+                SELECT fotografo_id, usado, expira_em FROM tokens_recuperacao 
+                WHERE token = %s 
+                FOR UPDATE  -- Bloqueia o registro para evitar race condition
+            """,
+                (token,),
+            )
+
+            resultado = cur.fetchone()
+
+            print(resultado)
+
+            if not (resultado):
+                mensagem = "Token inválido"
+            elif resultado["usado"] is True:
+                mensagem = "Token já foi utilizado"
+            elif resultado["expira_em"] < datetime.now():
+                mensagem = "Token expirado"
+
+            if mensagem is not None:
+                return {"erro": mensagem, "codigo": 400}
+
+            return resultado
+
     except Exception as e:
         registrar_log("Token inválido", str(e))
-        return None
+        return {"erro": "Não foi possível recuperar o token", "codigo": 500}
 
 
 def verificar_senha(senha_digitada, senha_hash):
