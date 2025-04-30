@@ -38,7 +38,7 @@ def login_usuario(email, senha):
         return {"token": token}
 
     except Exception as e:
-        # Falha genérica no backend — mantemos o erro interno fora do cliente por segurança
+        # Falha genérica no backend
         print(str(e))
         registrar_log("Erro no login", str(e))
         return {"erro": "Erro interno no servidor", "codigo": 500}
