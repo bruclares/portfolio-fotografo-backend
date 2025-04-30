@@ -44,6 +44,7 @@ def get_fotos():
             cloud_name=current_app.config["CLOUD_NAME"],
             api_key=current_app.config["API_KEY"],
             api_secret=current_app.config["API_SECRET"],
+            secure=current_app.config.get("CLOUDINARY_SECURE", True),
         )
 
         # Monta os parâmetros da requisição
@@ -63,8 +64,12 @@ def get_fotos():
         resposta = {"fotos": [], "proxima_pagina": response.get("next_cursor")}
 
         for resource in response.get("resources", []):
+            url = resource["url"]
+            if url.startswith("http://"):
+                url = url.replace("http://", "https://", 1)
+
             foto = {
-                "url": resource["url"],
+                "url": url,
                 "nome": resource["public_id"],
             }
             resposta["fotos"].append(foto)
