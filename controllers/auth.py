@@ -107,46 +107,38 @@ def resetar_senha():
     if not token or not nova_senha:
         return jsonify({"erro": "Token e nova senha são obrigatórios"}), 400
 
-    with get_cursor() as cur:
-        try:
-            s = Serializer(current_app.config["SECRET_KEY"], salt="recover-key")
-            # tenta decodificar o token e pegar o email original
-            dados = s.loads(token, max_age=3600)  # 1 hora de validade
+    try:
+        resultado = verificar_token_recuperacao(token)
 
-            # verifica se token já foi usado
-            if dados.get("used", True):  # assume True como padrão por segurança
-                return jsonify({"erro": "Token já utilizado"}), 400
+        if resultado.get("erro"):
+            return jsonify({"erro": resultado["erro"]}), resultado["codigo"]
 
-            email = dados["email"]
+        fotografo_id = resultado["fotografo_id"]
 
-        except SignatureExpired:
-            return jsonify({"erro": "Token expirado"}), 400
-        except BadSignature:
-            return jsonify({"erro": "Token inválido"}), 400
-        except Exception as e:
-            print(str(e))
-            return jsonify({"erro": "Erro ao redefinir a senha"}), 500
+        # gerar o hash da nova senha
+        senha_hash = bcrypt.hashpw(nova_senha.encode("utf-8"), bcrypt.gensalt()).decode(
+            "utf-8"
+        )
 
-        try:
-            # gerar o hash da nova senha
-            senha_hash = bcrypt.hashpw(
-                nova_senha.encode("utf-8"), bcrypt.gensalt()
-            ).decode("utf-8")
-
-            # atualizar no banco
+        # atualizar no banco
+        with get_cursor() as cur:
             cur.execute(
-                "UPDATE fotografo SET senha_hash = %s WHERE email = %s",
-                (senha_hash, email),
+                "UPDATE fotografo SET senha_hash = %s WHERE id = %s",
+                (senha_hash, fotografo_id),
             )
 
+            cur.execute(
+                """
+                UPDATE tokens_recuperacao 
+                SET usado = TRUE 
+                WHERE token = %s
+            """,
+                (token,),
+            )
             cur.connection.commit()
-            return jsonify({"mensagem": "Senha redefinida com sucesso"}), 200
+        return jsonify({"mensagem": "Senha redefinida com sucesso"}), 200
 
-        except SignatureExpired:
-            return jsonify({"erro": "Token expirado"}), 400
-        except BadSignature:
-            return jsonify({"erro": "Token inválido"}), 400
-        except Exception as e:
-            cur.connection.rollback()
-            print(f"Erro: {str(e)}")
-            return jsonify({"erro": "Erro ao redefinir a senha"}), 500
+    except Exception as e:
+        connection.rollback()
+        print(f"Erro: {str(e)}")
+        return jsonify({"erro": "Erro ao redefinir a senha"}), 500
