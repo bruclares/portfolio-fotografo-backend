@@ -1,9 +1,4 @@
-from flask import Blueprint, request, jsonify, current_app
-from itsdangerous import (
-    URLSafeTimedSerializer as Serializer,
-    SignatureExpired,
-    BadSignature,
-)
+from flask import Blueprint, request, jsonify
 from services.auth_service import (
     login_usuario,
     cadastrar_fotografo,
@@ -14,7 +9,6 @@ from services.auth_service import (
 from database.database import get_cursor, connection
 from services.email_service import enviar_email_recuperacao
 import bcrypt
-
 
 # Define o blueprint de autenticação, agrupando rotas de login e cadastro
 auth_bp = Blueprint("auth", __name__)
