@@ -22,7 +22,10 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     # Habilita CORS
-    CORS(app)
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": "https://portfolio-fotografo.vercel.app"}},
+    )
 
     # Inicializa as extensões COM a app
     jwt.init_app(app)
