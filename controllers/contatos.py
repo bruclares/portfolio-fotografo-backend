@@ -8,7 +8,7 @@ from flask_jwt_extended import jwt_required
 contatos_bp = Blueprint("contatos", __name__)
 
 
-@contatos_bp.route("/", methods=["POST"])
+@contatos_bp.route("", methods=["POST"])
 def inserir_contato():
     """
     Endpoint público para inserção de um novo contato via formulário.
@@ -75,7 +75,7 @@ def inserir_contato():
         )
 
 
-@contatos_bp.route("/", methods=["GET"])
+@contatos_bp.route("", methods=["GET"])
 @jwt_required()  # Protege a rota com autenticação JWT
 def listar_contatos():
     """

@@ -32,7 +32,17 @@ def create_app(config_class=Config):
         "https://portfolio-fotografo.vercel.app",  # Seu site em produção
     ]
 
-    CORS(app, origins=allowed_origins)
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": allowed_origins,
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": ["Content-Type", "Authorization"],
+            }
+        },
+        supports_credentials=True,
+    )
 
     # Inicializa as extensões COM a app
     jwt.init_app(app)

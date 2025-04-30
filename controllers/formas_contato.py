@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required
 formas_contato_bp = Blueprint("formas_contato", __name__)
 
 
-@formas_contato_bp.route("/", methods=["GET"])
+@formas_contato_bp.route("", methods=["GET"])
 @jwt_required()
 def listar_formas_contato():
     """
