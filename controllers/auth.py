@@ -82,7 +82,12 @@ def recuperar_senha():
 
     if email_existe(email):
         token = gerar_token_recuperacao(email)
-        enviar_email_recuperacao(email, token)
+
+        if token.get("erro"):
+            return jsonify({"erro": token["erro"]}), token["codigo"]
+
+        enviar_email_recuperacao(email, token["token"])
+
         return jsonify({"sucesso": "E-mail para recuperação de senha enviado!"}), 200
 
     else:
