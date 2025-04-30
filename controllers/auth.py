@@ -9,8 +9,9 @@ from services.auth_service import (
     cadastrar_fotografo,
     gerar_token_recuperacao,
     email_existe,
+    verificar_token_recuperacao,
 )
-from database.database import get_cursor
+from database.database import get_cursor, connection
 from services.email_service import enviar_email_recuperacao
 import bcrypt
 
