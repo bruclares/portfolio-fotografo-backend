@@ -9,9 +9,7 @@ from datetime import datetime
 
 def login_usuario(email, senha):
     try:
-        # Utiliza um cursor com context manager para garantir que seja fechado corretamente após o uso
         with get_cursor() as cur:
-            # Busca o usuário pelo e-mail (usuário é único e fixo no sistema)
             cur.execute(
                 "SELECT id, email, senha_hash FROM fotografo WHERE email = %s",
                 (email,),
@@ -19,14 +17,12 @@ def login_usuario(email, senha):
             usuario = cur.fetchone()
 
         if not usuario:
-            # Garante rastreabilidade do erro via logs
             registrar_log("Login falhou", "Usuário não encontrado")
             return {"erro": "Usuário não encontrado", "codigo": 404}
 
-        # Desestrutura os dados retornados para facilitar leitura e uso
         id_fotografo, email_db, senha_hash = usuario.values()
 
-        # Verifica a senha com hash usando função utilitária (mantém a responsabilidade separada)
+        # Verifica a senha com hash
         if not verificar_senha(senha, senha_hash):
             registrar_log("Login falhou", f"Senha inválida para {email_db}")
             return {"erro": "Senha inválida", "codigo": 401}
@@ -38,7 +34,6 @@ def login_usuario(email, senha):
         return {"token": token}
 
     except Exception as e:
-        # Falha genérica no backend
         print(str(e))
         registrar_log("Erro no login", str(e))
         return {"erro": "Erro interno no servidor", "codigo": 500}
@@ -62,7 +57,6 @@ def cadastrar_fotografo(email, senha):
         return {"mensagem": "Fotógrafo cadastrado com sucesso"}
 
     except Exception as e:
-        # Falha durante o cadastro — logamos o erro para auditoria e suporte
         registrar_log("Erro no cadastro", str(e))
         return {"erro": "Erro ao cadastrar fotógrafo", "codigo": 500}
 
@@ -70,7 +64,6 @@ def cadastrar_fotografo(email, senha):
 def gerar_token_recuperacao(email):
     try:
         with get_cursor() as cur:
-            # Busca ID do fotógrafo
             cur.execute("SELECT id FROM fotografo WHERE email = %s", (email,))
             fotografo_id = cur.fetchone()["id"]
 
@@ -116,11 +109,11 @@ def verificar_token_recuperacao(token):
             print(resultado)
 
             if not (resultado):
-                mensagem = "Token inválido"
+                mensagem = "Token inválido. Redirecionando para uma nova solicitação..."
             elif resultado["usado"] is True:
-                mensagem = "Token já foi utilizado"
+                mensagem = "Token já foi utilizado. Redirecionando para uma nova solicitação..."
             elif resultado["expira_em"] < datetime.now():
-                mensagem = "Token expirado"
+                mensagem = "Token expirado. Redirecionando para uma nova solicitação..."
 
             if mensagem is not None:
                 return {"erro": mensagem, "codigo": 400}

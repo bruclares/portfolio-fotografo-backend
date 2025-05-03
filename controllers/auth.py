@@ -57,7 +57,6 @@ def cadastro():
 
     resultado = cadastrar_fotografo(email, senha)
 
-    # Caso haja falha de validação ou conflito (ex: email já usado)
     if resultado.get("erro"):
         return jsonify({"erro": resultado["erro"]}), resultado["codigo"]
 
@@ -96,10 +95,17 @@ def resetar_senha():
     """
     data = request.get_json()
     token = data.get("token")
-    nova_senha = data.get("nova_senha")
+    nova_senha = data.get("nova-senha")
+    confirmar_senha = data.get("confirmar-senha")
 
-    if not token or not nova_senha:
-        return jsonify({"erro": "Token e nova senha são obrigatórios"}), 400
+    if not nova_senha or not confirmar_senha:
+        return jsonify({"erro": "Campos de senha são obrigatórios"}), 400
+
+    if not token:
+        return jsonify({"erro": "Token é obrigatório"}), 400
+
+    if confirmar_senha != nova_senha:
+        return jsonify({"erro": "Campos de senha não podem ser diferentes."}), 400
 
     try:
         resultado = verificar_token_recuperacao(token)
@@ -130,7 +136,14 @@ def resetar_senha():
                 (token,),
             )
             cur.connection.commit()
-        return jsonify({"mensagem": "Senha redefinida com sucesso"}), 200
+        return (
+            jsonify(
+                {
+                    "sucesso": "Senha redefinida com sucesso. Redirecionando você para o login..."
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         connection.rollback()

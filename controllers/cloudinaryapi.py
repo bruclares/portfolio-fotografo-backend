@@ -4,10 +4,8 @@ import cloudinary.api
 from dotenv import load_dotenv
 from services.logs import registrar_log
 
-# Carrega variáveis de ambiente do .env
 load_dotenv()
 
-# Define o blueprint da API relacionada ao Cloudinary
 cloudinary_bp = Blueprint("cloudinaryapi", __name__)
 
 
@@ -24,17 +22,14 @@ def get_fotos():
     """
 
     try:
-        # Extrai os dados da requisição JSON
         dados_requisicao = request.get_json()
         next_cursor = dados_requisicao.get("next_cursor") if dados_requisicao else None
         pasta = dados_requisicao.get("pasta") if dados_requisicao else None
 
-        # Valida presença da pasta
         if not pasta:
             registrar_log("Erro de Validação", "O parâmetro 'pasta' não foi informado")
             return jsonify({"erro": "O parâmetro 'pasta' é obrigatório"}), 400
 
-        # Registra intenção da requisição
         registrar_log(
             "Requisição de Galeria", f"Usuário solicitou fotos da pasta '{pasta}'"
         )
@@ -74,17 +69,14 @@ def get_fotos():
             }
             resposta["fotos"].append(foto)
 
-        # Log de sucesso com quantidade de fotos
         registrar_log(
             "Galeria Recuperada",
             f"{len(resposta['fotos'])} fotos retornadas da pasta '{pasta}'",
         )
 
-        # Retorna os dados para o frontend
         return jsonify(resposta)
 
     except Exception as e:
-        # Captura erros não previstos e registra log detalhado
         registrar_log("Erro ao Buscar Fotos", str(e))
         return (
             jsonify({"erro": "Erro ao buscar fotos, tente novamente mais tarde!"}),
