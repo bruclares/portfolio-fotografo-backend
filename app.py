@@ -21,15 +21,10 @@ def create_app(config_class=Config):
     # Carrega configurações
     app.config.from_object(config_class)
 
-    # Habilita CORS
-    # CORS(
-    #     app,
-    #     resources={r"/api/.*": {"origins": "https://portfolio-fotografo.vercel.app"}},
-    # )
     allowed_origins = [
-        "http://127.0.0.1:5500",  # Frontend local
-        "http://localhost:5500",  # Alternativa local
-        "https://portfolio-fotografo.vercel.app",  # Seu site em produção
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+        "https://portfolio-fotografo.vercel.app",
     ]
 
     CORS(

@@ -1,23 +1,29 @@
 from flask_mail import Message, Mail
+from flask import current_app
 
 mail = Mail()
 
 
 def enviar_email_recuperacao(email, token):
-    link = f"http://localhost:5000/resetar-senha?token={token}"  # trocar quando subir pra vercel
+
+    if current_app.config["ENVIRONMENT"] == "development":
+        link = f"http://localhost:5500/admin/criar-nova-senha.html?token={token}"
+    else:
+        link = f"https://portfolio-fotografo-backend.vercel.app/resetar-senha?token={token}"
+
     msg = Message(
         subject="Redefinição de Senha",
         recipients=[email],
     )
 
     msg.html = f"""
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Redefinir Senha</title>
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <title>Redefinir Senha</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
 
   <table width="100%" style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
     <tr>
@@ -43,8 +49,8 @@ def enviar_email_recuperacao(email, token):
     </tr>
   </table>
 
-</body>
-</html>
-"""
+    </body>
+    </html>
+    """
 
     mail.send(msg)
