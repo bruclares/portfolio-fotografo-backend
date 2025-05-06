@@ -2,152 +2,188 @@
 
 ### Descrição do Projeto
 
-O **Portfólio para Fotógrafos** é uma aplicação web Full Stack desenvolvida para fotógrafos exibirem seus portfólios de forma profissional e interativa. Este repositório contém o código do **back-end**, responsável por gerenciar a lógica de negócios, integrar o armazenamento de imagens via Cloudinary e processar contatos de clientes. A API foi desenvolvida com **Flask** e utiliza **PostgreSQL** para persistência de dados, oferecendo uma solução escalável para fotógrafos como Aurora Espinosa.
+O **Portfólio para Fotógrafos** é uma aplicação web Full Stack desenvolvida para fotógrafos exibirem seus portfólios de forma profissional e interativa. Este repositório contém o código do **back-end**, responsável por gerenciar a lógica de negócios, integrar o armazenamento de imagens via Cloudinary e processar contatos de clientes. A API foi desenvolvida com **Flask** e utiliza **PostgreSQL** para persistência de dados.
 
 O back-end suporta o front-end ao permitir o recebimento de mensagens de contato, a recuperação de fotos do Cloudinary e o registro de logs para auditoria.
-
-**Status do Projeto**: Este projeto está em desenvolvimento ativo. Algumas funcionalidades, como os endpoints de contatos e integração com Cloudinary, estão implementadas, mas outras (como autenticação) estão pendentes.
-
----
-
-## Funcionalidades
-
-### Back-end
-
-- **API**: Gerencia requisições do front-end:
-  - Recebimento e armazenamento de mensagens de contato.
-  - Recuperação de fotos do Cloudinary com paginação.
-  - Verificação de status da API.
-- **Banco de Dados**: Armazena mensagens de contato e logs em PostgreSQL.
-- **Integração com Cloudinary**: Recupera imagens dinamicamente para exibição no front-end.
-- **Segurança e Logs**: Registra todas as requisições para monitoramento e protege credenciais via variáveis de ambiente.
-
-### Front-end (Relacionado)
-
-- **Interface**: Exibe fotos e envia contatos, consumindo a API do back-end.
-
-### Banco de Dados (Relacionado)
-
-- **Estrutura**: Tabelas `contatos` e `logs` para dados persistentes.
 
 ---
 
 ## Tecnologias Utilizadas
 
-- **Back-end**: Python (Flask)
-- **Banco de Dados**: PostgreSQL
-- **Armazenamento de Imagens**: Cloudinary
-- **Ferramentas**: Psycopg (driver PostgreSQL), Flask-CORS, Dotenv
-- **Hospedagem**: Vercel
-- **Controle de Versão**: Git, GitHub
+- **Python 3.11+**
+- **Flask**
+- **Flask-JWT-Extended**
+- **Flask-Mail**
+- **PostgreSQL**
+- **Cloudinary**
+- **dotenv**
+- **psycopg (PostgreSQL Driver)**
+
+### Frontend
+
+- HTML5 + CSS3
+- JavaScript Puro (Vanilla JS)
+- Consumo de API REST
+- Deploy na Vercel
+
+### Backend
+
+- Python 3.12 com Flask
+- Blueprints, Controllers, Services e Utils
+- Flask-JWT-Extended (autenticação JWT)
+- Flask-Mail (recuperação de senha)
+- **psycopg 3** (conexão direta com PostgreSQL)
+- Integração com Cloudinary para upload de imagens
+- Banco de Dados: PostgreSQL (Neon)
+- Deploy na Vercel
 
 ---
 
-## Status de Desenvolvimento
+## Funcionalidades
 
-- **Etapas Concluídas**:
-
-  - Configuração da API Flask com Blueprints (AC1).
-  - Endpoint para gerenciamento de contatos (`POST /api/contatos/`) com validações e logs (AC1).
-  - Integração com Cloudinary para recuperação de fotos (`POST /api/cloudinary/fotos`) com paginação (parcialmente AC2).
-  - Conexão com PostgreSQL e tabelas `contatos` e `logs` (AC1 e AC2).
-
-- **Próximas Etapas**:
-
-  - **AC2 (06/04)**:
-    - Ajustar `/api/cloudinary/fotos` para usar `GET` com query parameters (`pasta`, `next_cursor`).
-    - Suportar páginas específicas do front-end (Projetos, Retratos, Colabs) via filtragem de pastas.
-  - **AC3 (04/05)**:
-    - Implementar autenticação para login do fotógrafo (ex.: `POST /api/auth/login`).
-    - Criar endpoint para gerenciamento de dados do fotógrafo (`POST/PUT /api/fotografo`).
-    - Adicionar suporte a "esqueci minha senha" (ex.: `POST /api/auth/reset-password`).
-  - **Entrega Final (08/06)**:
-    - Adicionar endpoint para carrossel de imagens (ex.: `GET /api/cloudinary/destaques`).
-    - Suportar filtros por metadados (ex.: `GET /api/cloudinary/fotos?pasta=projetos&tag=xyz`).
-    - Finalizar testes de performance e segurança.
-
-- **Riscos Conhecidos**:
-  - Uso de `POST` para leitura em `/api/cloudinary/fotos`, o que não segue REST puro.
-  - Possíveis falhas na integração com Cloudinary em cargas altas.
+- Autenticação com e-mail e senha (JWT)
+- Cadastro inicial do fotógrafo (usuário único)
+- Recuperação de senha por e-mail com token temporário
+- Envio de mensagens de contato
+- CRUD de formas de contato (WhatsApp, Instagram, etc.)
+- Upload de imagens via Cloudinary
+- Log de requisições para auditoria
 
 ---
 
-## Estrutura do Projeto
+## Estrutura de Pastas
 
-```
-portfolio-fotografo-backend/
-├── controllers/
+```bash
+.
+├── app.py                  # Ponto de entrada da aplicação
+├── config.py               # Configurações por ambiente
+├── controllers/            # Blueprints organizados por funcionalidade
+│   ├── auth.py
 │   ├── contatos.py
-│   ├── cloudinaryapi.py
+│   ├── formas_contato.py
+│   └── cloudinaryapi.py
+├── services/               # Regras de negócio (auth, email, log)
+│   ├── auth_service.py
+│   ├── email_service.py
+│   └── log_service.py
 ├── database/
-│   ├── database.py
-│   ├── migration.sql
-├── services/
-│   ├── logs.py
-├── .env
-├── .gitignore
-├── requirements.txt
-├── app.py
-├── vercel.json
-├── README.md
+│   └── database.py         # Conexão com PostgreSQL
+├── .env                    # Variáveis de ambiente (não subir!)
+├── README.md               # Documentação do projeto
+└── requirements.txt        # Lista de dependências
 ```
-
-- **`controllers/`**: Lógica de roteamento para contatos e Cloudinary.
-- **`database/`**: Conexão com PostgreSQL e scripts de migração.
-- **`services/`**: Registro de logs.
-- **`app.py`**: Ponto de entrada da API Flask.
-- **`vercel.json`**: Configuração para deploy.
 
 ---
 
-## Como Executar Localmente
+## Como Rodar Localmente
 
-1. **Clone o repositório**:
+### 1. Clone o repositório:
 
-   ```bash
-   git clone https://github.com/bruclares/portfolio-fotografo-backend.git
-   cd portfolio-fotografo-backend
-   ```
+```
+git clone https://github.com/seu-usuario/portfolio-fotografo-backend.git
+cd portfolio-fotografo-backend
+```
 
-2. **Pré-requisitos**:
+### 2. Crie e ative o ambiente virtual:
 
-   - Python 3.8+ e PostgreSQL instalados.
+```
+python -m venv venv
+source venv/bin/activate      # Linux/macOS
+venv\Scripts\activate         # Windows
+```
 
-3. **Instale as dependências**:
+### 3. Instale as dependências:
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+```
+pip install -r requirements.txt
+```
 
-4. **Configure as variáveis de ambiente**:
+---
 
-   Crie um arquivo `.env` na raiz com:
+## Variáveis de Ambiente (.env)
 
-   ```
-   DATABASE_URL=postgresql://usuario:senha@host:porta/banco
-   CLOUD_NAME=seu_cloud_name
-   API_KEY=sua_api_key
-   API_SECRET=sua_api_secret
-   ```
+```
+FLASK_SECRET_KEY=sua-chave-flask
+JWT_SECRET_KEY=sua-chave-jwt
 
-   Certifique-se de que o `.env` está no `.gitignore`.
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/portifolio_fotografo
 
-5. **Configure o banco de dados**:
+MAIL_SERVER=smtp.seudominio.com
+MAIL_PORT=587
+MAIL_USERNAME=seuemail@exemplo.com
+MAIL_PASSWORD=suasenha
+MAIL_USE_TLS=True
+MAIL_USE_SSL=False
+MAIL_DEFAULT_SENDER=seuemail@exemplo.com
+MAIL_SALT=sua-salt-para-token
 
-   Execute o script de migração:
+CLOUD_NAME=nome-do-cloudinary
+API_KEY=sua-api-key
+API_SECRET=sua-api-secret
+ENVIRONMENT=development
+```
 
-   ```bash
-   psql -U usuario -d banco -f database/migration.sql
-   ```
+## Testes Manuais
 
-6. **Execute o servidor**:
+Você pode testar os endpoints com ferramentas como Postman ou Insomnia.
 
-   ```bash
-   flask run
-   ```
+### Autenticação
 
-7. **Acesse a API**:
-   - Disponível em `http://localhost:5000`.
+POST /api/auth/cadastro → Cria fotógrafo
+
+POST /api/auth/login → Login com JWT
+
+POST /api/auth/recuperar-senha → Envia e-mail com token
+
+POST /api/auth/resetar-senha → Reseta senha com token
+
+### Contato
+
+POST /api/contatos → Envia mensagem de contato
+
+GET /api/formas-contato → Lista formas de contato
+
+POST /api/formas-contato → Cria nova forma de contato
+
+PUT /api/formas-contato/:id → Edita
+
+DELETE /api/formas-contato/:id → Deleta
+
+---
+
+## Banco de Dados
+
+O banco usa PostgreSQL com as seguintes tabelas:
+
+- fotografo
+
+- formas_contato
+
+- contatos
+
+- tokens_recuperacao
+
+- logs
+
+A versão inicial das tabelas está disponível em scripts SQL (migration).
+
+---
+
+## Boas Práticas
+
+- Organização por camadas: controllers, services, database
+
+- Uso de Blueprints para modularização
+
+- Tokens JWT com tempo de expiração
+
+- Recuperação de senha segura com token único
+
+- Integração com Cloudinary para uploads de imagem
+
+- Armazenamento de logs para auditoria
+
+- Separação de configurações por ambiente
 
 ---
 
@@ -157,14 +193,5 @@ portfolio-fotografo-backend/
 - **Repositório Front-end**: [portfolio-fotografo-frontend](https://github.com/bruclares/portfolio-fotografo-frontend)
 - **Repositório Back-end**: [portfolio-fotografo-backend](https://github.com/bruclares/portfolio-fotografo-backend)
 - **Hospedagem na Vercel**: [Portfólio Fotógrafo](https://portfolio-fotografo.vercel.app/)
-- **Design no Canva**: [Link do Design](https://www.canva.com/design/DAGdA_GiiT4/Cwp1Fd92u-JSd0oN7unAgg/view?utm_content=DAGdA_GiiT4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h0d9a7d5038)
-- **Vídeo de Apresentação**: [Link do Vídeo](https://www.youtube.com/watch?v=LxZCA7SuQ8Y)
 
 ---
-
-## Diferenciais do Projeto
-
-1. **Integração com Cloudinary**: Recuperação dinâmica de fotos para o front-end.
-2. **Escalabilidade**: Uso de Flask e PostgreSQL para suportar crescimento.
-3. **Monitoramento**: Registro de logs para auditoria.
-4. **Boas Práticas**: Commits semânticos, modularidade com Blueprints e versionamento no GitHub.
