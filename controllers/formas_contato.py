@@ -8,7 +8,6 @@ formas_contato_bp = Blueprint("formas_contato", __name__)
 
 
 @formas_contato_bp.route("", methods=["GET"])
-@jwt_required()
 def listar_formas_contato():
     """
     Lista todas as formas de contato públicas do fotógrafo
