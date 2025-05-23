@@ -147,8 +147,6 @@ POST /api/formas-contato → Cria nova forma de contato
 
 PUT /api/formas-contato/:id → Edita
 
-DELETE /api/formas-contato/:id → Deleta
-
 ---
 
 ## Banco de Dados
