@@ -15,17 +15,21 @@ def listar_formas_contato():
 
     try:
         with get_cursor() as cur:
-            cur.execute("SELECT * FROM formas_contato ORDER BY id DESC")
-            resultados = cur.fetchall()
+            cur.execute("SELECT * FROM formas_contato")
+            resultados = cur.fetchone()
+            # print(resultados)
 
-            lista = [
-                {"id": item["id"], "tipo": item["tipo"], "contato": item["contato"]}
-                for item in resultados
-            ]
+            # lista = {
+            #         "id": resultados["id"],
+            #         "redesocial_nome": resultados["redesocial_nome"],
+            #         "redesocial_perfil": resultados["redesocial_perfil"],
+            #         "email": resultados["email"],
+            #         "telefone": resultados["telefone"],
+            #     }
 
         registrar_log("Formas de Contato Listadas", "Consulta realizada com sucesso")
 
-        return jsonify(lista), 200
+        return jsonify(resultados), 200
 
     except psycopg.DatabaseError as e:
         connection.rollback()
@@ -41,22 +45,33 @@ def atualizar_forma_contato(id):
     """
     dados = request.get_json()
 
-    if "tipo" not in dados or "contato" not in dados:
-        return jsonify({"erro": "Os campos tipo e contato são obrigatórios"}), 400
+    if any(valor in ("", None) for valor in dados.values()):
+        return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
 
     try:
         with get_cursor() as cur:
             cur.execute(
                 """
-                UPDATE formas_contato SET tipo = %s, contato = %s, atualizado_em = CURRENT_TIMESTAMP
+                UPDATE
+                formas_contato SET redesocial_nome = %s, 
+                redesocial_perfil = %s, 
+                telefone = %s, 
+                email = %s, 
+                atualizado_em = CURRENT_TIMESTAMP
                 WHERE id = %s
                 """,
-                (dados.get("tipo"), dados.get("contato"), id),
+                (
+                    dados.get("redesocial_nome"),
+                    dados.get("redesocial_perfil"),
+                    dados.get("telefone"),
+                    dados.get("email"),
+                    id,
+                ),
             )
 
             connection.commit()
 
-        registrar_log("Forma de contato", f"ID {id} alterado com sucesso!")
+        registrar_log("Forma de contato", f"ID {id} alterada com sucesso!")
 
         return jsonify({"sucesso": "Forma de contato alterada com sucesso!"}), 200
 
