@@ -37,7 +37,7 @@ def listar_formas_contato():
         return jsonify({"erro": "Erro ao buscar formas de contato"}), 500
 
 
-@formas_contato_bp.route("/<int:id>", methods=["PUT"])
+@formas_contato_bp.route("/<int:id>", methods=["POST"])
 @jwt_required()
 def atualizar_forma_contato(id):
     """
