@@ -7,33 +7,53 @@ from flask_jwt_extended import jwt_required
 formas_contato_bp = Blueprint("formas_contato", __name__)
 
 
+# Rota pública - sem autenticação
 @formas_contato_bp.route("", methods=["GET"])
-def listar_formas_contato():
+def listar_formas_contato_publico():
     """
-    Lista todas as formas de contato públicas do fotógrafo
+    Lista formas de contato públicas (sem dados sensíveis)
     """
-
     try:
         with get_cursor() as cur:
-            cur.execute("SELECT * FROM formas_contato")
+            cur.execute(
+                """
+                SELECT redesocial_nome, redesocial_perfil, email, telefone 
+                FROM formas_contato
+            """
+            )
             resultados = cur.fetchone()
-            # print(resultados)
 
-            # lista = {
-            #         "id": resultados["id"],
-            #         "redesocial_nome": resultados["redesocial_nome"],
-            #         "redesocial_perfil": resultados["redesocial_perfil"],
-            #         "email": resultados["email"],
-            #         "telefone": resultados["telefone"],
-            #     }
-
-        registrar_log("Formas de Contato Listadas", "Consulta realizada com sucesso")
-
+        registrar_log(
+            "Formas de Contato Públicas Listadas", "Consulta realizada com sucesso"
+        )
         return jsonify(resultados), 200
 
     except psycopg.DatabaseError as e:
         connection.rollback()
-        registrar_log("Erro ao Listar Formas de Contato", str(e))
+        registrar_log("Erro ao Listar Formas de Contato Públicas", str(e))
+        return jsonify({"erro": "Erro ao buscar formas de contato"}), 500
+
+
+# Rota privada - com autenticação obrigatória
+@formas_contato_bp.route("/admin", methods=["GET"])
+@jwt_required()
+def listar_formas_contato_admin():
+    """
+    Lista todas as formas de contato (dados completos - apenas admin)
+    """
+    try:
+        with get_cursor() as cur:
+            cur.execute("SELECT * FROM formas_contato")
+            resultados = cur.fetchone()
+
+        registrar_log(
+            "Formas de Contato Admin Listadas", "Consulta realizada com sucesso"
+        )
+        return jsonify(resultados), 200
+
+    except psycopg.DatabaseError as e:
+        connection.rollback()
+        registrar_log("Erro ao Listar Formas de Contato Admin", str(e))
         return jsonify({"erro": "Erro ao buscar formas de contato"}), 500
 
 
