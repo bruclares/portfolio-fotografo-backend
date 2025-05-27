@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt
 from services.auth_service import (
     login_usuario,
     cadastrar_fotografo,
     gerar_token_recuperacao,
     email_existe,
     verificar_token_recuperacao,
+    registrar_log,
 )
 from database.database import get_cursor, connection
 from services.email_service import enviar_email_recuperacao
@@ -149,3 +151,45 @@ def resetar_senha():
         connection.rollback()
         print(f"Erro: {str(e)}")
         return jsonify({"erro": "Erro ao redefinir a senha"}), 500
+
+
+@auth_bp.route("/logout", methods=["POST"])
+@jwt_required()
+def logout():
+    """
+    Endpoint para logout seguro.
+    Adiciona o token atual à denylist
+    """
+    try:
+        # obtém dados do token atual
+        token_data = get_jwt()
+        jti = token_data["jti"]
+        fotografo_id = token_data["fotografo_id"]
+
+        # adiciona token à denylist
+        with get_cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO tokens_denylist (token_jti, fotografo_id, motivo)
+                VALUES (%s, %s, %s)
+                """,
+                (jti, fotografo_id, "logout"),
+            )
+            cur.connection.commit()
+
+        # log do logout
+        registrar_log("Logout realizado", f"Token {jti[:8]}... invalidado")
+
+        return (
+            jsonify(
+                {"sucesso": "Logout realizado com sucesso", "codigo": "LOGOUT_SUCESSO"}
+            ),
+            200,
+        )
+
+    except Exception as e:
+        registrar_log("Erro no logout", str(e))
+        return (
+            jsonify({"erro": "Erro interno no servidor", "codigo": "ERRO_LOGOUT"}),
+            500,
+        )
