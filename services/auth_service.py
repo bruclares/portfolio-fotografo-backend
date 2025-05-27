@@ -18,17 +18,17 @@ def login_usuario(email, senha):
 
         if not usuario:
             registrar_log("Login falhou", "Usuário não encontrado")
-            return {"erro": "Usuário não encontrado", "codigo": 404}
+            return {"erro": "Dados incorretos", "codigo": 404}
 
-        id_fotografo, email_db, senha_hash = usuario.values()
+        fotografo_id, email_db, senha_hash = usuario.values()
 
         # Verifica a senha com hash
         if not verificar_senha(senha, senha_hash):
             registrar_log("Login falhou", f"Senha inválida para {email_db}")
-            return {"erro": "Senha inválida", "codigo": 401}
+            return {"erro": "Dados incorretos", "codigo": 401}
 
         # Geração de token JWT contendo o ID do fotógrafo — usado para autenticação nas rotas protegidas
-        token = gerar_token_jwt(id_fotografo)
+        token = gerar_token_jwt(fotografo_id)
 
         registrar_log("Login bem-sucedido", f"Usuário {email_db} logado")
         return {"token": token}
