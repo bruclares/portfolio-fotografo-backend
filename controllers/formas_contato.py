@@ -11,8 +11,35 @@ formas_contato_bp = Blueprint("formas_contato", __name__)
 @formas_contato_bp.route("", methods=["GET"])
 def listar_formas_contato_publico():
     """
-    Lista formas de contato públicas (sem dados sensíveis)
+    Retorna informações públicas sobre formas de contato do fotógrafo.
+
+    ---
+    tags:
+      - Formas de Contato (Público)
+    responses:
+      200:
+        description: Lista de formas de contato pública retornada com sucesso
+        schema:
+          type: object
+          properties:
+            redesocial_nome:
+              type: string
+              description: Nome da rede social (ex: Instagram)
+            redesocial_perfil:
+              type: string
+              description: Link do perfil
+            email:
+              type: string
+              description: E-mail público do fotógrafo
+            telefone:
+              type: string
+              description: Telefone de contato
+      500:
+        description: Erro ao buscar dados
+        examples:
+          {"erro": "Erro ao buscar formas de contato"}
     """
+
     try:
         with get_cursor() as cur:
             cur.execute(
@@ -39,8 +66,41 @@ def listar_formas_contato_publico():
 @jwt_required()
 def listar_formas_contato_admin():
     """
-    Lista todas as formas de contato (dados completos - apenas admin)
+    Retorna todas as formas de contato com dados completos (requer autenticação).
+
+    ---
+    tags:
+      - Formas de Contato (Admin)
+    security:
+      - JWT: []
+    responses:
+      200:
+        description: Dados completos das formas de contato retornados com sucesso
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+            redesocial_nome:
+              type: string
+            redesocial_perfil:
+              type: string
+            telefone:
+              type: string
+            email:
+              type: string
+            criado_em:
+              type: string
+              format: date-time
+            atualizado_em:
+              type: string
+              format: date-time
+      500:
+        description: Erro ao buscar dados
+        examples:
+          {"erro": "Erro ao buscar formas de contato"}
     """
+
     try:
         with get_cursor() as cur:
             cur.execute("SELECT * FROM formas_contato")
@@ -61,8 +121,52 @@ def listar_formas_contato_admin():
 @jwt_required()
 def atualizar_forma_contato(id):
     """
-    Atualiza uma forma de contao do fotográfo por id
+    Atualiza os dados de uma forma de contato específica pelo ID.
+
+    ---
+    tags:
+      - Formas de Contato (Admin)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+        description: ID da forma de contato a ser atualizada
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            redesocial_nome:
+              type: string
+              example: "Instagram"
+            redesocial_perfil:
+              type: string
+              example: "https://instagram.com/fotografo "
+            telefone:
+              type: string
+              example: "(11) 98765-4321"
+            email:
+              type: string
+              example: "fotografo@example.com"
+    security:
+      - JWT: []
+    responses:
+      200:
+        description: Forma de contato atualizada com sucesso
+        examples:
+          {"sucesso": "Forma de contato alterada com sucesso!"}
+      400:
+        description: Erro de validação nos campos
+        examples:
+          {"erro": "Todos os campos são obrigatórios"}
+      500:
+        description: Erro ao salvar alterações
+        examples:
+          {"erro": "Erro ao salvar sua alteração, tente novamente."}
     """
+
     dados = request.get_json()
 
     if any(valor in ("", None) for valor in dados.values()):

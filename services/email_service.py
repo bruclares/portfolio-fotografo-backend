@@ -5,11 +5,28 @@ mail = Mail()
 
 
 def enviar_email_recuperacao(email, token):
+    """
+    Envia um e-mail contendo o link de redefinição de senha para o usuário.
+
+    O link inclui o token fornecido como parâmetro e varia conforme o ambiente:
+        - Desenvolvimento: usa localhost
+        - Produção: usa domínio definido nas configurações
+
+    Args:
+        email (str): Endereço de e-mail do destinatário.
+        token (str): Token seguro gerado para redefinir a senha.
+
+    Returns:
+        None: A função envia o e-mail diretamente e não retorna valor.
+
+    Raises:
+        Exception: Se ocorrer erro ao enviar o e-mail (não tratado explicitamente aqui).
+    """
 
     if current_app.config["ENVIRONMENT"] == "development":
         link = f"http://localhost:5500/admin/criar-nova-senha.html?token={token}"
     else:
-        link = f"https://portfolio-fotografo-backend.vercel.app/resetar-senha?token={token}"
+        link = f"https://portfolio-fotografo-backend.vercel.app/resetar-senha?token= {token}"
 
     msg = Message(
         subject="Redefinição de Senha",

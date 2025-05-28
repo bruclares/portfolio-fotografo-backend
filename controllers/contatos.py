@@ -12,8 +12,49 @@ contatos_bp = Blueprint("contatos", __name__)
 @contatos_bp.route("", methods=["POST"])
 def inserir_contato():
     """
-    Endpoint público para inserção de um novo contato via formulário.
-    Valida os campos obrigatórios antes de persistir os dados no banco.
+    Cria um novo contato via formulário.
+
+    ---
+    tags:
+      - Contatos
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            nome:
+              type: string
+              description: Nome completo do remetente
+              example: "João da Silva"
+            telefone:
+              type: string
+              description: Telefone do remetente (opcional)
+              example: "(11) 98765-4321"
+            email:
+              type: string
+              description: E-mail do remetente (opcional)
+              example: "joao@email.com"
+            mensagem:
+              type: string
+              description: Mensagem enviada pelo usuário
+              example: "Olá, gostaria de saber mais sobre seus serviços."
+    responses:
+      201:
+        description: Contato criado com sucesso
+        examples:
+          {"sucesso": "Sua mensagem foi enviada com sucesso!"}
+      400:
+        description: Erro de validação nos campos obrigatórios
+        examples:
+          {"erro": "O nome é obrigatório"}
+          {"erro": "Telefone inválido"}
+          {"erro": "Ao menos um contato é obrigatório"}
+      500:
+        description: Erro interno ao salvar o contato
+        examples:
+          {"erro": "Sua mensagem não foi entregue, tente novamente, por favor!"}
     """
 
     novo_contato = request.get_json()
@@ -93,14 +134,63 @@ def inserir_contato():
 @jwt_required()
 def listar_contatos():
     """
-    Endpoint protegido para listagem de todos os contatos cadastrados.
-    Requer autenticação via token JWT.
-    Parâmetros:
-    - pagina: Número da página (padrão: 1)
-    - por_pagina: Itens por página (padrão: 5)
-    Retorna a data formatada em dois formatos:
-    - data_envio: Mantém o formato original (para compatibilidade)
-    - data_formatada: Formato legível (DD/MM/AAAA HH:MM)
+    Lista todos os contatos cadastrados (requer autenticação).
+
+    ---
+    tags:
+      - Contatos
+    parameters:
+      - name: pagina
+        in: query
+        type: integer
+        default: 1
+        description: Número da página de resultados
+      - name: por_pagina
+        in: query
+        type: integer
+        default: 5
+        description: Quantidade de registros por página (máximo 100)
+    security:
+      - JWT: []
+    responses:
+      200:
+        description: Lista paginada de contatos
+        schema:
+          type: object
+          properties:
+            dados:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  nome:
+                    type: string
+                  data_envio:
+                    type: string
+                    format: date-time
+                  data_formatada:
+                    type: string
+                    format: date
+                  telefone:
+                    type: string
+                  email:
+                    type: string
+                  mensagem:
+                    type: string
+            pagina:
+              type: integer
+            por_pagina:
+              type: integer
+            total:
+              type: integer
+            total_paginas:
+              type: integer
+      500:
+        description: Erro ao buscar contatos
+        examples:
+          {"erro": "Erro ao buscar contatos"}
     """
 
     pagina = request.args.get("pagina", default=1, type=int)

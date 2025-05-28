@@ -8,6 +8,26 @@ from datetime import datetime
 
 
 def login_usuario(email, senha):
+    """
+    Autentica um fotógrafo com base no e-mail e senha fornecidos.
+
+    Realiza uma busca no banco de dados pelo e-mail, verifica se a senha está correta,
+    e gera um token JWT caso a autenticação seja bem-sucedida.
+
+    Args:
+        email (str): E-mail do usuário.
+        senha (str): Senha fornecida pelo usuário.
+
+    Returns:
+        dict: Com 'token' em caso de sucesso ou mensagem de erro em caso de falha.
+            Exemplos:
+                {'token': '...'}  # Login bem-sucedido
+                {'erro': 'Dados incorretos', 'codigo': 401}  # Credenciais inválidas
+                {'erro': 'Erro interno no servidor', 'codigo': 500}  # Erro inesperado
+
+    Raises:
+        Exception: Se ocorrer qualquer erro durante a execução da função.
+    """
     try:
         with get_cursor() as cur:
             cur.execute(
@@ -40,6 +60,25 @@ def login_usuario(email, senha):
 
 
 def cadastrar_fotografo(email, senha):
+    """
+    Cadastra um novo fotógrafo no sistema com e-mail e senha criptografada.
+
+    Apenas um fotógrafo pode ser cadastrado no sistema (ID fixo = 1).
+    Caso já exista um cadastro, retorna erro.
+
+    Args:
+        email (str): E-mail do fotógrafo.
+        senha (str): Senha informada pelo usuário (será hashada).
+
+    Returns:
+        dict: Mensagem de sucesso ou erro.
+            Exemplos:
+                {'mensagem': 'Fotógrafo cadastrado com sucesso'}
+                {'erro': 'Erro ao cadastrar fotógrafo', 'codigo': 500}
+
+    Raises:
+        Exception: Se ocorrer qualquer erro durante a execução da função.
+    """
     try:
         # Gera hash seguro para a senha com bcrypt (salt incluso por padrão)
         senha_hash = bcrypt.hashpw(senha.encode("utf-8"), bcrypt.gensalt()).decode(
@@ -62,12 +101,30 @@ def cadastrar_fotografo(email, senha):
 
 
 def gerar_token_recuperacao(email):
+    """
+    Gera e armazena um token seguro para recuperação de senha.
+
+    O token tem validade de 1 hora e só pode ser usado uma vez.
+    Usado para criar links seguros de redefinição de senha via e-mail.
+
+    Args:
+        email (str): E-mail do usuário que solicitou recuperação de senha.
+
+    Returns:
+        dict: Contém o token gerado ou mensagem de erro.
+            Exemplos:
+                {'token': 'abc123xyz'}
+                {'erro': 'Não foi possível gerar o token...', 'codigo': 500}
+
+    Raises:
+        Exception: Se ocorrer qualquer erro durante a execução da função.
+    """
     try:
         with get_cursor() as cur:
             cur.execute("SELECT id FROM fotografo WHERE email = %s", (email,))
             fotografo_id = cur.fetchone()["id"]
 
-        # gera o tken
+        # Gera o token
         s = Serializer(current_app.config["SECRET_KEY"], salt="recover-key")
         token = s.dumps({"fid": fotografo_id, "timestamp": datetime.now().timestamp()})
 
@@ -91,6 +148,24 @@ def gerar_token_recuperacao(email):
 
 
 def verificar_token_recuperacao(token):
+    """
+    Valida um token de recuperação de senha.
+
+    Verifica se o token existe, ainda é válido e não foi usado anteriormente.
+
+    Args:
+        token (str): Token recebido via e-mail.
+
+    Returns:
+        dict: Com os dados do token (fotografo_id) se for válido.
+            Ou mensagem de erro caso contrário.
+            Exemplo:
+                {'fotografo_id': 1, 'usado': False, 'expira_em': ...}
+                {'erro': 'Token já foi utilizado...', 'codigo': 400}
+
+    Raises:
+        Exception: Se ocorrer qualquer erro durante a execução da função.
+    """
     try:
         mensagem = None
 
@@ -105,8 +180,6 @@ def verificar_token_recuperacao(token):
             )
 
             resultado = cur.fetchone()
-
-            print(resultado)
 
             if not (resultado):
                 mensagem = "Token inválido. Redirecionando para uma nova solicitação..."
@@ -126,6 +199,18 @@ def verificar_token_recuperacao(token):
 
 
 def verificar_senha(senha_digitada, senha_hash):
+    """
+    Compara uma senha fornecida com seu hash armazenado.
+
+    Usa bcrypt para verificar a integridade da senha.
+
+    Args:
+        senha_digitada (str): Senha informada pelo usuário.
+        senha_hash (str): Hash armazenado no banco de dados.
+
+    Returns:
+        bool: True se as senhas coincidem, False caso contrário.
+    """
     try:
         return bcrypt.checkpw(
             senha_digitada.encode("utf-8"), senha_hash.encode("utf-8")
@@ -136,7 +221,15 @@ def verificar_senha(senha_digitada, senha_hash):
 
 
 def email_existe(email):
+    """
+    Verifica se um e-mail já está cadastrado no sistema.
 
+    Args:
+        email (str): E-mail a ser verificado.
+
+    Returns:
+        bool: True se o e-mail já estiver cadastrado, False caso contrário.
+    """
     try:
         with get_cursor() as cur:
             cur.execute(
