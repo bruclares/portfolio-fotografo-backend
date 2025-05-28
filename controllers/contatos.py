@@ -215,7 +215,7 @@ def listar_contatos():
 
             # buscar só os registros da pagina atual
             cur.execute(
-                """ SELECT *FROM contatos
+                """ SELECT * FROM contatos
                         ORDER BY data_envio DESC
                         LIMIT %s OFFSET %s
                         """,
