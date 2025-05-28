@@ -4,18 +4,28 @@ from flask import request
 
 def registrar_log(tipo_log, status):
     """
-    Registra informações de log no banco de dados para fins de auditoria e rastreabilidade.
+    Registra informações de log no banco de dados para auditoria e rastreabilidade.
 
-    Parâmetros esperados:
-        - tipo_log (str): Tipo ou categoria do log (ex: 'Login', 'Erro', 'Cadastro').
-        - status (str): Mensagem descritiva ou status do evento ocorrido.
-
-    Dados registrados automaticamente:
+    A função captura automaticamente os seguintes dados da requisição:
         - IP do usuário
         - User-Agent (navegador ou ferramenta usada)
         - URL acessada
-        - Método HTTP (GET, POST etc.)
+        - Método HTTP utilizado (GET, POST, etc.)
+
+    Args:
+        tipo_log (str): Categoria ou tipo do evento registrado.
+                        Ex: 'Login bem-sucedido', 'Erro ao salvar contato', 'Cadastro realizado'.
+        status (str): Descrição detalhada do evento ocorrido.
+
+    Returns:
+        None: A função não retorna valor, mas insere um registro na tabela `logs`.
+
+    Raises:
+        Exception: Se ocorrer erro ao inserir o log no banco.
+                   O erro é capturado internamente e exibido no console,
+                   mas não interrompe a execução principal.
     """
+
     try:
         with get_cursor() as cur:
 

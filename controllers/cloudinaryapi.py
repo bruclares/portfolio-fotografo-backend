@@ -12,13 +12,56 @@ cloudinary_bp = Blueprint("cloudinaryapi", __name__)
 @cloudinary_bp.route("/fotos", methods=["POST"])
 def get_fotos():
     """
-    Endpoint para recuperar imagens armazenadas em uma pasta específica no Cloudinary.
-    Espera um JSON com:
-        - 'pasta': nome da pasta no Cloudinary (obrigatório)
-        - 'next_cursor': cursor opcional para paginação
-    Retorna:
-        - Lista de imagens (url e nome)
-        - Cursor da próxima página (caso exista)
+    Recupera uma lista de fotos de uma pasta específica no Cloudinary.
+
+    ---
+    tags:
+      - Galeria de Fotos (Cloudinary)
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            pasta:
+              type: string
+              description: Nome da pasta no Cloudinary
+              example: "galeria/fotos"
+            next_cursor:
+              type: string
+              description: Cursor para paginação (opcional)
+              example: "1234567890ABCDEF"
+        required:
+          - pasta
+    responses:
+      200:
+        description: Lista de fotos recuperada com sucesso
+        schema:
+          type: object
+          properties:
+            fotos:
+              type: array
+              items:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: URL pública da imagem
+                  nome:
+                    type: string
+                    description: Identificador único da imagem
+            proxima_pagina:
+              type: string
+              description: Cursor para próxima página (se houver)
+      400:
+        description: Parâmetro obrigatório ausente
+        examples:
+          {"erro": "O parâmetro 'pasta' é obrigatório"}
+      500:
+        description: Erro interno ao buscar fotos
+        examples:
+          {"erro": "Erro ao buscar fotos, tente novamente mais tarde!"}
     """
 
     try:

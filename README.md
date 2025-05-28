@@ -1,195 +1,197 @@
-## Portfólio para Fotógrafos com Integração de Conteúdo
+# Portfólio Fotógrafo – Backend
 
-### Descrição do Projeto
+> Sistema backend para gerenciamento de contatos, formas de contato e autenticação de fotógrafo. Desenvolvido com Flask, Python, PostgreSQL e Cloudinary.
 
-O **Portfólio para Fotógrafos** é uma aplicação web Full Stack desenvolvida para fotógrafos exibirem seus portfólios de forma profissional e interativa. Este repositório contém o código do **back-end**, responsável por gerenciar a lógica de negócios, integrar o armazenamento de imagens via Cloudinary e processar contatos de clientes. A API foi desenvolvida com **Flask** e utiliza **PostgreSQL** para persistência de dados.
+Este é o backend de um sistema simples para um portfólio de fotógrafo. Ele permite:
 
-O back-end suporta o front-end ao permitir o recebimento de mensagens de contato, a recuperação de fotos do Cloudinary e o registro de logs para auditoria.
-
----
-
-## Tecnologias Utilizadas
-
-- **Python 3.11+**
-- **Flask**
-- **Flask-JWT-Extended**
-- **Flask-Mail**
-- **PostgreSQL**
-- **Cloudinary**
-- **dotenv**
-- **psycopg (PostgreSQL Driver)**
-
-### Frontend
-
-- HTML5 + CSS3
-- JavaScript Puro (Vanilla JS)
-- Consumo de API REST
-- Deploy na Vercel
-
-### Backend
-
-- Python 3.12 com Flask
-- Blueprints, Controllers, Services e Utils
-- Flask-JWT-Extended (autenticação JWT)
-- Flask-Mail (recuperação de senha)
-- **psycopg 3** (conexão direta com PostgreSQL)
-- Integração com Cloudinary para upload de imagens
-- Banco de Dados: PostgreSQL (Neon)
-- Deploy na Vercel
+- Login seguro com JWT
+- Recuperação de senha via e-mail
+- Upload de imagens no Cloudinary
+- Gerenciamento de contatos recebidos pelo site
+- Configuração de formas de contato públicas
 
 ---
 
 ## Funcionalidades
 
-- Autenticação com e-mail e senha (JWT)
-- Cadastro inicial do fotógrafo (usuário único)
-- Recuperação de senha por e-mail com token temporário
-- Envio de mensagens de contato
-- CRUD de formas de contato (WhatsApp, Instagram, etc.)
-- Upload de imagens via Cloudinary
-- Log de requisições para auditoria
+- Autenticação com JWT (login, logout, recuperação de senha)
+- Envio de e-mails com Flask-Mail
+- Upload e listagem de imagens via Cloudinary
+- Configuração única de usuário-administrador
+- Registro de mensagens de contato
+- Armazenamento seguro no PostgreSQL
+- Logs de acesso e erros
+- Token de recuperação com expiração e denylist
 
 ---
 
-## Estrutura de Pastas
+## Requisitos
 
-```bash
-.
-├── app.py                  # Ponto de entrada da aplicação
-├── config.py               # Configurações por ambiente
-├── controllers/            # Blueprints organizados por funcionalidade
-│   ├── auth.py
-│   ├── contatos.py
-│   ├── formas_contato.py
-│   └── cloudinaryapi.py
-├── services/               # Regras de negócio (auth, email, log)
-│   ├── auth_service.py
-│   ├── email_service.py
-│   └── log_service.py
-├── database/
-│   └── database.py         # Conexão com PostgreSQL
-├── .env                    # Variáveis de ambiente (não subir!)
-├── README.md               # Documentação do projeto
-└── requirements.txt        # Lista de dependências
-```
+Antes de rodar a aplicação, certifique-se de ter instalado:
+
+- [Python 3.10+](https://www.python.org/downloads/)
+- [PostgreSQL](https://www.postgresql.org/download/)
+- [Git](https://git-scm.com/)
+- [Pipenv ou virtualenv](https://pipenv.pypa.io/) (opcional, mas recomendado)
 
 ---
 
-## Como Rodar Localmente
+## Tecnologias Utilizadas
 
-### 1. Clone o repositório:
-
-```
-git clone https://github.com/seu-usuario/portfolio-fotografo-backend.git
-cd portfolio-fotografo-backend
-```
-
-### 2. Crie e ative o ambiente virtual:
-
-```
-python -m venv venv
-source venv/bin/activate      # Linux/macOS
-venv\Scripts\activate         # Windows
-```
-
-### 3. Instale as dependências:
-
-```
-pip install -r requirements.txt
-```
+- **Backend**: [Flask](https://flask.palletsprojects.com/)
+- **Autenticação**: Flask-JWT-Extended
+- **E-mail**: Flask-Mail
+- **Banco de Dados**: PostgreSQL / Neon
+- **Armazenamento de Imagens**: [Cloudinary](https://cloudinary.com)
+- **Logs e Auditoria**: Banco de dados + service de logs
+- **Segurança**: Bcrypt (hash de senhas), tokens únicos e revogáveis
 
 ---
 
-## Variáveis de Ambiente (.env)
+## Instalação
 
-```
-FLASK_SECRET_KEY=sua-chave-flask
-JWT_SECRET_KEY=sua-chave-jwt
+1. **Clone o repositório:**
 
-DATABASE_URL=postgresql://usuario:senha@localhost:5432/portifolio_fotografo
+   ```bash
+   git clone https://github.com/seu-usuario/portfolio-fotografo-backend.git
+   cd portfolio-fotografo-backend
 
-MAIL_SERVER=smtp.seudominio.com
+   ```
+
+2. **(Opcional) Crie um ambiente virtual:**
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate    # Linux/Mac
+   venv\Scripts\activate       # Windows
+
+   ```
+
+3. **Instale as dependências:**
+
+   ```bash
+   pip install -r requirements.txt
+
+   ```
+
+4. **Configure as variáveis de ambiente:**
+
+Crie um arquivo .env na raiz do projeto com as seguintes variáveis:
+
+# Flask
+
+FLASK_SECRET_KEY=chave-secreta-flask
+FLASK_DEBUG=True
+
+# JWT
+
+JWT_SECRET_KEY=chave-jwt-secreta
+
+# Banco de Dados
+
+DATABASE_URL=postgres://seu_usuario:senha@localhost:5432/portifolio_fotografo
+
+# E-mail
+
+MAIL_SERVER=smtp.gmail.com
 MAIL_PORT=587
-MAIL_USERNAME=seuemail@exemplo.com
-MAIL_PASSWORD=suasenha
+MAIL_USERNAME=seuemail@gmail.com
+MAIL_PASSWORD=sua_senha_de_app_ou_token
 MAIL_USE_TLS=True
-MAIL_USE_SSL=False
-MAIL_DEFAULT_SENDER=seuemail@exemplo.com
-MAIL_SALT=sua-salt-para-token
+MAIL_DEFAULT_SENDER=seuemail@gmail.com
+MAIL_SALT=recover-key
 
-CLOUD_NAME=nome-do-cloudinary
+# Cloudinary
+
+CLOUD_NAME=sua-cloud-name
 API_KEY=sua-api-key
 API_SECRET=sua-api-secret
+
+# Ambiente
+
 ENVIRONMENT=development
-```
 
-## Testes Manuais
+---
 
-Você pode testar os endpoints com ferramentas como Postman ou Insomnia.
+5. **Rode o script de migração no banco de dados:**
 
-### Autenticação
+   ```bash
+   psql -U seu_usuario -d seu_banco -f migration.sql
 
-POST /api/auth/cadastro → Cria fotógrafo
+   ```
 
-POST /api/auth/login → Login com JWT
+6. **Inicie o servidor localmente:**
+   ```bash
+   python app.py
+   ```
 
-POST /api/auth/recuperar-senha → Envia e-mail com token
+Acesse a API em http://localhost:5000
 
-POST /api/auth/resetar-senha → Reseta senha com token
+---
 
-### Contato
+## Como Executar
 
-POST /api/contatos → Envia mensagem de contato
+1. **Ative o ambiente virtual:**
+   source venv/bin/activate # Linux/Mac
+   venv\Scripts\activate # Windows
 
-GET /api/formas-contato → Lista formas de contato
+2. **Execute a aplicação:**
+   python app.py
 
-POST /api/formas-contato → Cria nova forma de contato
+3. **Acesse a API:**
+   http://localhost:5000
 
-PUT /api/formas-contato/:id → Edita
+---
+
+## Segurança
+
+- Tokens JWT com JTI único e denylist (tokens_denylist)
+- Senhas armazenadas com bcrypt
+- Tokens de recuperação com expiração (1 hora)
+- E-mails enviados com template HTML seguro
+- Todos os endpoints protegidos exigem token válido
 
 ---
 
 ## Banco de Dados
 
-O banco usa PostgreSQL com as seguintes tabelas:
+O projeto usa PostgreSQL com as seguintes tabelas:
 
-- fotografo
-
-- formas_contato
-
-- contatos
-
-- tokens_recuperacao
-
-- logs
-
-A versão inicial das tabelas está disponível em scripts SQL (migration).
+- fotografo: Usuário administrador (único)
+- tokens_recuperacao: Tokens para redefinir senha
+- tokens_denylist: Tokens JWT inválidos
+- contatos: Mensagens recebidas via formulário
+- formas_contato: Meios de contato públicos
+- logs: Registros de acesso e erros
 
 ---
 
-## Boas Práticas
+## Deploy
 
-- Organização por camadas: controllers, services, database
+Você pode fazer deploy no Vercel , Render , Heroku ou qualquer serviço compatível com Python + Flask + PostgreSQL.
 
-- Uso de Blueprints para modularização
+## Estrutura do Projeto
 
-- Tokens JWT com tempo de expiração
+```
+portfolio-fotografo-backend
+├─ app.py
+├─ config.py
+├─ controllers
+│  ├─ auth.py
+│  ├─ cloudinaryapi.py
+│  ├─ contatos.py
+│  └─ formas_contato.py
+├─ database
+│  ├─ database.py
+│  └─ migration.sql
+├─ README.md
+├─ requirements.txt
+├─ services
+│  ├─ auth_service.py
+│  ├─ email_service.py
+│  └─ logs.py
+├─ utils
+│  └─ token.py
+└─ vercel.json
 
-- Recuperação de senha segura com token único
-
-- Integração com Cloudinary para uploads de imagem
-
-- Armazenamento de logs para auditoria
-
-- Separação de configurações por ambiente
-
----
-
-## Links
-
-- **GitHub Project**: [Link do Projeto](https://github.com/users/bruclares/projects/3)
-- **Repositório Front-end**: [portfolio-fotografo-frontend](https://github.com/bruclares/portfolio-fotografo-frontend)
-- **Repositório Back-end**: [portfolio-fotografo-backend](https://github.com/bruclares/portfolio-fotografo-backend)
-- **Hospedagem na Vercel**: [Portfólio Fotógrafo](https://portfolio-fotografo.vercel.app/)
-
----
+```

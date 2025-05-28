@@ -15,16 +15,23 @@ if not database_url:
 
 # Estabelece conexão com o PostgreSQL usando a URL fornecida.
 # O parâmetro 'row_factory=dict_row' permite que os resultados venham como dicionários.
+# A conexão é mantida aberta durante o ciclo de vida da aplicação.
 connection = psycopg.connect(database_url, row_factory=dict_row)
 print("Conexão estabelecida com sucesso!")
 
 
 def get_cursor():
     """
-    Retorna um cursor ativo para execução de queries SQL.
+    Retorna um cursor ativo para execução de queries SQL no banco de dados.
 
-    Garante que a conexão esteja aberta antes de retornar o cursor.
-    Ideal para uso em camadas de serviço ou repositório que acessam o banco.
+    O cursor retornado permite realizar operações como SELECT, INSERT, UPDATE, etc.
+    Garante que a conexão esteja ativa antes de retornar o cursor.
+
+    Returns:
+        psycopg.Cursor: Objeto cursor conectado ao banco de dados, pronto para uso
+
+    Raises:
+        ConnectionError: Se a conexão com o banco foi fechada ou interrompida
     """
     if connection.closed:
         raise ConnectionError("A conexão com o banco foi fechada!")
