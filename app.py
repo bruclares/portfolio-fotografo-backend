@@ -41,7 +41,7 @@ def create_app(config_class=Config):
     allowed_origins = [
         "http://127.0.0.1:5500",
         "http://localhost:5500",
-        "https://portfolio-fotografo.vercel.app ",
+        "https://portfolio-fotografo.vercel.app",
     ]
 
     # Configura CORS com políticas específicas para rotas sob /api/*
