@@ -44,7 +44,7 @@ def listar_formas_contato_publico():
         with get_cursor() as cur:
             cur.execute(
                 """
-                SELECT redesocial_nome, redesocial_perfil, email, telefone 
+                SELECT redesocial_nome, redesocial_perfil, email, telefone
                 FROM formas_contato
             """
             )
@@ -177,10 +177,10 @@ def atualizar_forma_contato(id):
             cur.execute(
                 """
                 UPDATE
-                formas_contato SET redesocial_nome = %s, 
-                redesocial_perfil = %s, 
-                telefone = %s, 
-                email = %s, 
+                formas_contato SET redesocial_nome = %s,
+                redesocial_perfil = %s,
+                telefone = %s,
+                email = %s,
                 atualizado_em = CURRENT_TIMESTAMP
                 WHERE id = %s
                 """,

@@ -4,7 +4,6 @@ import psycopg
 from services.logs import registrar_log
 from flask_jwt_extended import jwt_required
 from datetime import datetime
-import re
 
 contatos_bp = Blueprint("contatos", __name__)
 
