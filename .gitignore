@@ -22,3 +22,5 @@ instance/
 # Arquivos do sistema operacional
 .DS_Store
 Thumbs.db
+.vercel
+.env*.local

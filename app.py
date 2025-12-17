@@ -5,6 +5,10 @@ Este módulo contém a configuração inicial da API Flask, carregamento de conf
 registro de blueprints e setup das extensões como JWT e CORS.
 """
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager

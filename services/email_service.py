@@ -26,7 +26,7 @@ def enviar_email_recuperacao(email, token):
     if current_app.config["ENVIRONMENT"] == "development":
         link = f"http://localhost:5500/admin/criar-nova-senha.html?token={token}"
     else:
-        link = f"https://portfolio-fotografo-backend.vercel.app/resetar-senha?token= {token}"
+        link = f"https://portfolio-fotografo.vercel.app/admin/criar-nova-senha.html?token={token}"
 
     msg = Message(
         subject="Redefinição de Senha",
